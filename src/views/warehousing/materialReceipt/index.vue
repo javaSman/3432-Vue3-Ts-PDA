@@ -11,33 +11,8 @@
         :supplierConfig="dataMap.detailsForm[index].multiLine"
         :index="index"
         @supplierList="getSupplierList(dataMap.detailsForm[index])"
-        :detailsForm= "dataMap.detailsForm"
-      >
-    </DetailsVue>
-    <div class="multiLine" v-if="dataMap.multiLineShow">
-    <div class="mask"></div>
-     <div class="pop">
-      <div  v-for="(item, itemIndex) in dataMap.items" :key="itemIndex">
-        <div v-for="(subItem, subItemIndex) in item.subArray" :key="subItemIndex">
-    <van-row  v-for="prop in dataMap.objectProperties" :key="prop">
-    <van-col span="1">
-      <van-icon class="icon" name="plus" @click="addSupplierConfig(itemIndex)" />
-    </van-col>
-    <van-col span="14">
-      <van-field  v-model="subItem[prop]" :label="prop" label-width="60" placeholder="请输入" clearable/>
-    </van-col>
-    <!-- <van-col span="8"><van-field v-model="item.receivingNum"  label="实" label-width="30" placeholder="请输入" clearable/>
-      </van-col> -->
-    <van-col span="1">
-      <van-icon class="icon" name="minus" @click.prevent="removeSupplierConfig(itemIndex, subItemIndex)" />
-      <van-icon v-if="index===1" class="icon" :name="show ? 'arrow-down' : 'arrow'" @click="show = !show" />
-    </van-col>
-  </van-row>
-</div>
-</div>
-  <van-button type="primary" size="mini" @click="mulineSubmit">确定</van-button>
-     </div>
-  </div>
+        :detailsForm="dataMap.detailsForm"
+      />
     </van-tab>
     <!-- <van-tab title="不可收货明细"> -->
     <!-- <TableContent :columns="dataMap.columns" :dataSource="dataMap.dataList">
@@ -103,31 +78,25 @@ let dataMap = reactive({
   show: false,
   loading: false,
   confirmText: '确定',
-  supplierCode: '', //供应商编号
+  supplierCode: '', // 供应商编号
   multiLineShow: false,
   multiList: [] as any,
   newList: [] as any,
   items: [
-      { 
-        subArray: [
-          { supplierBatch: 'value1', receivingNum: 'value2' },
-          { supplierBatch: 'value3', receivingNum: 'value4' }
-        ]
-      },
-      // {
-      //   subArray: [
-      //     { supplierBatch: 'value5', receivingNum: 'value6' },
-      //     { supplierBatch: 'value7', receivingNum: 'value8' }
-      //   ]
-      // }
-    ],
-    objectProperties: ['supplierBatch', 'receivingNum'], // 属性数组
-    supplierConfig: [
-      {
-        supplierBatch: '',
-        receivingNum: ''
-      }
-    ],
+    {
+      subArray: [
+        { supplierBatch: 'value1', receivingNum: 'value2' },
+        { supplierBatch: 'value3', receivingNum: 'value4' }
+      ]
+    }
+  ],
+  objectProperties: ['supplierBatch', 'receivingNum'], // 属性数组
+  supplierConfig: [
+    {
+      supplierBatch: '',
+      receivingNum: ''
+    }
+  ],
   ruleForm: {
     supplierConfig: [
       {
@@ -153,84 +122,70 @@ onMounted(() => {
   // getDict()
   let purchaseOrder = formComponent.value?.formInputRef.purchaseOrder.inputRef
   purchaseOrder.focus()
-  // dataMap.detailsList[5].supplierConfig = dataMap.ruleForm.supplierConfig
-  // console.log( dataMap.detailsList[5].supplierConfig,'选择')
-  // dataMap.detailsForm.forEach((item: any, index)=>{
   dataMap.ruleForm.supplierConfig.forEach((item2: any, index2) => {
-        item2[`supplierBatch${index2}`] = ''
-        item2[`receivingNum${index2}`] = ''
-        // item2.supplierBatch = ''
-        // item2.receivingNum = ''
-      })
-    // })
-    getDateAuthority()
+    item2[`supplierBatch${index2}`] = ''
+    item2[`receivingNum${index2}`] = ''
+  })
+  // })
+  getDateAuthority()
 })
 // 获取仓库
-async function getDict(val,index) {
-  const res = await WMSAPI.get(APIName, { IsPage: false, MaterialsGroup: val.materialsGroup }, 'warehouse/all');
+async function getDict(val, index) {
+  const res = await WMSAPI.get(APIName, { IsPage: false, MaterialsGroup: val.materialsGroup }, 'warehouse/all')
   // await WMSAPI.get(APIName, { IsPage: false,MaterialsGroup:val }, 'warehouse/all').then((res) => {
-    if(res.items.length === 0){
-      form.value.message = '请在web仓库管理配置物料组!'
-      return
+  if (res.items.length === 0) {
+    form.value.message = '请在web仓库管理配置物料组!'
+    return
+  }
+  let selectIndex = index
+  let array: any[] = []
+  array = res.items as []
+  array.forEach((item) => {
+    item.label = item.warehouseName
+    item.value = item.warehouseID
+    // console.log(val.region === item.warehouseID)
+    if (val.region === item.warehouseID) {
+      dataMap.detailsForm[selectIndex].wareHouseID = item.warehouseID
     }
-    let selectIndex = index
-    let array: any[] = []
-    array = res.items as []
-    array.forEach((item) => {
-      item.label = item.warehouseName
-      item.value = item.warehouseID
-      // console.log(val.region === item.warehouseID)
-      if(val.region === item.warehouseID){
-        dataMap.detailsForm[selectIndex].wareHouseID = item.warehouseID
-      }
-    })
-    const detailsList = ref(dataMap.detailsForm[index].detailsList)
-    detailsList.value[3].options = array
-    detailsList.value[3].optionsTwo = JSON.parse(JSON.stringify(array))
-    // console.log(detailsList.value[3].options)
-    // dataMap.detailsForm[selectIndex].detailsList[3].options =  array
-    // dataMap.detailsForm[selectIndex].detailsList[3].optionsTwo = JSON.parse(JSON.stringify(array))
-    // console.log(dataMap.detailsForm[selectIndex].detailsList[3].options)
-  // })
+  })
+  const detailsList = ref(dataMap.detailsForm[index].detailsList)
+  detailsList.value[3].options = array
+  detailsList.value[3].optionsTwo = JSON.parse(JSON.stringify(array))
 }
 // 获取日期权限
-function getDateAuthority(){
+function getDateAuthority() {
   let userInfo = localStorage.getItem('userInfo')
   let text = eval('(' + userInfo + ')')
   WMSAPI.get(APIName, { userName: text.account }, 'pda/GetAuthority').then((res) => {
-       if(res.success) dataMap.formList[3].type = 'Calendar'
-       else dataMap.formList[3].type = 'Text'
+    if (res.success) dataMap.formList[3].type = 'Calendar'
+    else dataMap.formList[3].type = 'Text'
   })
 }
 dataMap.formList[0].enter = getDetails
 // 获取采购订单收货明细
 function getDetails() {
   // dataMap.show = true
-  WMSAPI.get(APIName, { PO: form.value.purchaseOrder }, 'purchaseorder/GetOrderDetails').then((res) => {
+  WMSAPI.get(APIName, { PO: form.value.purchaseOrder }, 'purchaseorder/GetOrderDetailsPDA').then((res) => {
     if (res.success) {
-      if(res.data.header.purchOrderType === 'ZC01'){ // 采购单号
-      dataMap.detailsForm = res.data.details as any[]
-      dataMap.detailsFormClone = JSON.parse(JSON.stringify(dataMap.detailsForm))
-      form.value.message = res.message as string
-      form.value.supplierName = res.data.header.supplierName as string
-      dataMap.supplierCode = res.data.header.supplierCode as string
-      dataMap.detailsForm.forEach((item: any, index) => {
-        item.quantity === item.receivingQuantity?item.nomenge='':item.nomenge = item.quantity - item.receivingQuantity + "  "+item.unitID // 未收数量
-        item.multiLineIndex = index
-        item[`multiLine${index}`] = dataMap.ruleForm.supplierConfig
-        item.multiLine = JSON.parse(JSON.stringify(dataMap.supplierConfig))
-        item.detailsList = JSON.parse(JSON.stringify(dataMap.detailsList))
-        getDict(item,index)
-        // console.log(item[`multiLine${index}`], 'multiLine数据')
-      })
-      // console.log( dataMap.detailsForm,'mushu')
-      // let arryNew = [];
-      // dataMap.ruleForm.supplierConfig.map((item, index) => {
-      //      arryNew.push(Object.assign({}, item, { name: item.moduleName }));
-      //      return arryNew;
-      //  });
-      // this.List = arryNew;
-      }else {
+      if (res.data.header.purchOrderType === 'ZC01') {
+        // 采购单号
+        dataMap.detailsForm = res.data.details as any[]
+        dataMap.detailsFormClone = JSON.parse(JSON.stringify(dataMap.detailsForm))
+        form.value.message = res.message as string
+        form.value.supplierName = res.data.header.supplierName as string
+        dataMap.supplierCode = res.data.header.supplierCode as string
+        dataMap.detailsForm.forEach((item: any, index) => {
+          item.quantity === item.receivingQuantity
+            ? (item.nomenge = '')
+            : (item.nomenge = item.quantity - item.receivingQuantity + '  ' + item.unitID) // 未收数量
+          item.multiLineIndex = index
+          item[`multiLine${index}`] = dataMap.ruleForm.supplierConfig
+          item.multiLine = JSON.parse(JSON.stringify(dataMap.supplierConfig))
+          item.detailsList = JSON.parse(JSON.stringify(dataMap.detailsList))
+          getDict(item, index)
+          // console.log(item[`multiLine${index}`], 'multiLine数据')
+        })
+      } else {
         form.value.supplierName = res.data.header.supplierName as string
         dataMap.detailsForm = []
         form.value.message = '不属于采购订单号'
@@ -252,7 +207,7 @@ dataMap.formList[2].enter = getMaterial
 function getMaterial() {
   if (form.value.materialID) {
     let data = dataMap.detailsForm?.filter((item: any) => {
-      let reg = new RegExp(form.value.materialID) //正则模糊搜索
+      let reg = new RegExp(form.value.materialID) // 正则模糊搜索
       return reg.test(item.materialID)
     })
     dataMap.detailsForm = data
@@ -260,34 +215,12 @@ function getMaterial() {
     dataMap.detailsForm = dataMap.detailsFormClone
   }
 }
-function getSupplierList(val) {
- console.log(val)
- dataMap.multiLineShow = !dataMap.multiLineShow
-//  dataMap.multiList = val
-}
-const addSupplierConfig = (itemIndex) => {
-  const newItem = {};
-      // 初始化新对象的属性
-      dataMap.objectProperties.forEach(prop => {
-        newItem[prop] = '';
-      });
-      dataMap.items[itemIndex].subArray.push(newItem);
-  // subArray.push({ supplierBatch: '', receivingNum: '' }); // 添加一个新对象
-}
-const removeSupplierConfig = (itemIndex, subItemIndex) => {
-  // subArray.splice(index, 1); // 移除指定索引的对象
-  dataMap.items[itemIndex].multiLine.splice(subItemIndex, 1);
-}
-function mulineSubmit(){
-  dataMap.multiLineShow = false
-  console.log(dataMap.detailsForm)
-}
 function handleInput(itemIndex, subItemIndex, propName) {
-// 当输入框的值改变时，将新值更新到其他输入框
-const value = this.items[itemIndex].subArray[subItemIndex][propName];
-      dataMap.detailsForm.forEach(item => {
-        item.multiLine[subItemIndex][propName] = value;
-      });
+  // 当输入框的值改变时，将新值更新到其他输入框
+  const value = this.items[itemIndex].subArray[subItemIndex][propName]
+  dataMap.detailsForm.forEach((item) => {
+    item.multiLine[subItemIndex][propName] = value
+  })
 }
 // 清除
 function handleClear() {
@@ -304,14 +237,7 @@ function handleClear() {
 }
 // 确定
 function handleConfirm() {
-  // console.log(dataMap.detailsForm, '11')
-  // console.log(dataMap.ruleForm.supplierConfig, 'dataMap.ruleForm.supplierConfig')
   formComponent.value?.refForm.validate().then(() => {
-    //   for (let item of dataMap.detailsForm) {
-    //    var receivingNum = item.receivingNum
-    //    if (receivingNum) {
-    //   }
-    // }
     dataMap.loading = true
     let userInfo = localStorage.getItem('userInfo')
     let text = eval('(' + userInfo + ')')
@@ -369,30 +295,28 @@ function handleConfirm() {
   padding: 8px !important;
   font-size: 12px;
 }
-.multiLine .mask
-{
-width: 100%;
-height: 100%;
-background: #000;
-opacity: .3;
-position: fixed;
-top: 0;
-left: 0;
-z-index: 1;
+.multiLine .mask {
+  width: 100%;
+  height: 100%;
+  background: #000;
+  opacity: 0.3;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
 }
 
-.multiLine .pop
-{
-width: 90%;
-height: 16rem;
-background: #fff;
-/* font-size: 62.5%; */
-position: fixed;
-top: 50%;
-left: 50%;
-margin-top: -130px;
-margin-left: -169px;
-z-index: 10;
+.multiLine .pop {
+  width: 90%;
+  height: 16rem;
+  background: #fff;
+  /* font-size: 62.5%; */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  margin-top: -130px;
+  margin-left: -169px;
+  z-index: 10;
 }
 /* .multiLine {
   width:90%;

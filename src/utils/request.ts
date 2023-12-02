@@ -23,17 +23,12 @@ service.interceptors.request.use(
     // 非wms业务代理，走企业云
     // let miswms = config.url?.startsWith('/sapwms-api')
     let miswms = config.url?.startsWith(process.env.VUE_APP_BASE_API + 'eip-mapp-sapwms-server')
-    // console.log(config.url)
-    // console.log('wms: ', wms)
-    // console.log('非: ', miswms)
 
     if (wms && getToken()) {
-      // debugger
       config.headers['Authorization'] = getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
       config.headers.Authorization = 'Bearer ' + getToken()
     }
     if (miswms && getKeyId()) {
-      // debugger
       config.headers.keyId = getKeyId()
     }
     config.headers['Content-Type'] = 'application/json'

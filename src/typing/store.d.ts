@@ -50,6 +50,7 @@ export interface UserState {
   roles: any[]
   loadMenus: boolean
   menus: any[]
+  interfaceMenu: any[]
   noAuth: boolean
   homeMenus: any[]
   permissions: any[]

@@ -70,7 +70,7 @@ export const constantRouterMap: Array<RouteRecordRaw> = [
       // }
     ]
     // MARK "alwaysShow": true, 就是会让当前菜单为二级菜单
-  },
+  }
   // {
   //   path: '/center',
   //   component: Layout,
@@ -108,7 +108,7 @@ export const asyncRoutes = [
     path: '/warehousing',
     name: 'warehousing',
     // redirect: '/receive/103POReceiveToQuality',
-    meta: { title: '入库业务', icon: '', hidden: false },
+    meta: { title: '入库业务', icon: '', hidden: false, roles: [''] },
     component: 'Layout',
     // component: 'receive/103POReceiveToQuality/index',
     children: [
@@ -117,7 +117,7 @@ export const asyncRoutes = [
         hidden: false,
         path: 'materialReceipt',
         name: 'warehousing.materialReceipt',
-        meta: { title: '物料收货', icon: 'received', hidden: false },
+        meta: { title: '物料收货', icon: 'received', hidden: false, roles: ['warehousing.materialReceipt'] },
         component: 'warehousing/materialReceipt/index'
       },
       {
@@ -125,7 +125,7 @@ export const asyncRoutes = [
         hidden: false,
         path: 'materialGround',
         name: 'warehousing.materialGround',
-        meta: { title: '物料上架', icon: 'grounding', hidden: false },
+        meta: { title: '物料上架', icon: 'grounding', hidden: false, roles: ['warehousing.materialGround'] },
         component: 'warehousing/materialGround/index'
       },
       {
@@ -133,7 +133,7 @@ export const asyncRoutes = [
         hidden: false,
         path: 'productWarehousing',
         name: 'warehousing.productWarehousing',
-        meta: { title: '成品入库', icon: 'grounding', hidden: false },
+        meta: { title: '成品入库', icon: 'grounding', hidden: false, roles: ['warehousing.productWarehousing'] },
         component: 'warehousing/productWarehousing/index'
       },
       // {
@@ -141,7 +141,7 @@ export const asyncRoutes = [
       //   hidden: true,
       //   path: 'lowHumidity',
       //   name: 'warehousing.lowHumidity',
-      //   meta: { title: '低湿手工入库', icon: 'grounding', hidden: false },
+      //   meta: { title: '低湿手工入库', icon: 'grounding', hidden: false , roles: ['warehousing.lowHumidity'] },
       //   component: 'warehousing/lowHumidity/index'
       // },
       {
@@ -149,7 +149,7 @@ export const asyncRoutes = [
         hidden: false,
         path: 'returnMaterials',
         name: 'warehousing.returnMaterials',
-        meta: { title: '退料入库', icon: 'grounding', hidden: false },
+        meta: { title: '退料入库', icon: 'grounding', hidden: false, roles: ['warehousing.returnMaterials'] },
         component: 'warehousing/returnMaterials/index'
       },
       {
@@ -157,7 +157,7 @@ export const asyncRoutes = [
         hidden: false,
         path: 'solidWaste',
         name: 'warehousing.solidWaste',
-        meta: { title: '固废入库', icon: 'grounding', hidden: false },
+        meta: { title: '固废入库', icon: 'grounding', hidden: false, roles: ['warehousing.solidWaste'] },
         component: 'warehousing/solidWaste/index'
       }
     ]
@@ -167,7 +167,7 @@ export const asyncRoutes = [
     hidden: false,
     path: '/outBounding',
     name: 'outBounding',
-    meta: { title: '出库业务', icon: '', hidden: false },
+    meta: { title: '出库业务', icon: '', hidden: false, roles: ['outBounding'] },
     component: 'Layout',
     children: [
       {
@@ -175,7 +175,7 @@ export const asyncRoutes = [
         hidden: false,
         path: 'materialOutbound',
         name: 'outBounding.materialOutbound',
-        meta: { title: '备料出库', icon: 'outbound', hidden: false },
+        meta: { title: '备料出库', icon: 'outbound', hidden: false, roles: ['outBounding.materialOutbound'] },
         component: 'outBounding/materialOutbound/index'
       },
       // {
@@ -183,7 +183,7 @@ export const asyncRoutes = [
       //   hidden: false,
       //   path: 'materialPreparation',
       //   name: 'outBounding.materialPreparation',
-      //   meta: { title: '备料换标', icon: 'grounding', hidden: false },
+      //   meta: { title: '备料换标', icon: 'grounding', hidden: false , roles: ['outBounding.materialPreparation'] },
       //   component: 'outBounding/materialPreparation/index'
       // },
       // {
@@ -191,7 +191,7 @@ export const asyncRoutes = [
       //   hidden: true,
       //   path: 'callEmpty',
       //   name: 'outBounding.callEmpty',
-      //   meta: { title: '呼叫空托盘', icon: 'grounding', hidden: false },
+      //   meta: { title: '呼叫空托盘', icon: 'grounding', hidden: false , roles: ['outBounding.callEmpty'] },
       //   component: 'outBounding/callEmpty/index'
       // },
       {
@@ -199,7 +199,7 @@ export const asyncRoutes = [
         hidden: false,
         path: 'incomingQuality',
         name: 'outBounding.incomingQuality',
-        meta: { title: '来料质检退货', icon: 'grounding', hidden: false },
+        meta: { title: '来料质检退货', icon: 'grounding', hidden: false, roles: ['outBounding.incomingQuality'] },
         component: 'outBounding/incomingQuality/index'
       }
     ]
@@ -210,7 +210,7 @@ export const asyncRoutes = [
     path: '/transfer',
     name: 'transfer',
     redirect: '/transfer/transferOut',
-    meta: { title: '调拨业务', icon: '', hidden: false },
+    meta: { title: '调拨业务', icon: '', hidden: false, roles: ['transfer'] },
     component: 'Layout',
     children: [
       {
@@ -218,7 +218,7 @@ export const asyncRoutes = [
         hidden: false,
         path: 'transferOut',
         name: 'transfer.transferOut',
-        meta: { title: '调拨发出', icon: 'grounding', hidden: false },
+        meta: { title: '调拨发出', icon: 'grounding', hidden: false, roles: ['transfer.transferOut'] },
         component: 'transfer/transferOut/index'
       },
       {
@@ -226,7 +226,7 @@ export const asyncRoutes = [
         hidden: false,
         path: 'transferReceipt',
         name: 'transfer.transferReceipt',
-        meta: { title: '调拨接收', icon: 'grounding', hidden: false },
+        meta: { title: '调拨接收', icon: 'grounding', hidden: false, roles: ['transfer.transferReceipt'] },
         component: 'transfer/transferReceipt/index'
       },
       {
@@ -234,7 +234,7 @@ export const asyncRoutes = [
         hidden: false,
         path: 'vehicleAllocation',
         name: 'transfer.vehicleAllocation',
-        meta: { title: '载具间调拨', icon: 'grounding', hidden: false },
+        meta: { title: '载具间调拨', icon: 'grounding', hidden: false, roles: ['transfer.vehicleAllocation'] },
         component: 'transfer/vehicleAllocation/index'
       },
       {
@@ -242,7 +242,7 @@ export const asyncRoutes = [
         hidden: false,
         path: 'transferLocations',
         name: 'transfer.transferLocations',
-        meta: { title: '货位间调拨', icon: 'grounding', hidden: false },
+        meta: { title: '货位间调拨', icon: 'grounding', hidden: false, roles: ['transfer.transferLocations'] },
         component: 'transfer/transferLocations/index'
       }
     ]
@@ -253,7 +253,7 @@ export const asyncRoutes = [
     path: '/insideWarehouse',
     name: 'insideWarehouse',
     redirect: '/insideWarehouse/unpackingWarehouse',
-    meta: { title: '库内业务', icon: 'WMSFunction', hidden: false },
+    meta: { title: '库内业务', icon: 'WMSFunction', hidden: false, roles: ['insideWarehouse'] },
     component: 'Layout',
     children: [
       {
@@ -261,7 +261,7 @@ export const asyncRoutes = [
         hidden: false,
         path: 'unpackingWarehouse',
         name: 'insideWarehouse.unpackingWarehouse',
-        meta: { title: '在库拆标', icon: 'grounding', hidden: false },
+        meta: { title: '在库拆标', icon: 'grounding', hidden: false, roles: ['insideWarehouse.unpackingWarehouse'] },
         component: 'insideWarehouse/unpackingWarehouse/index'
       },
       {
@@ -269,7 +269,7 @@ export const asyncRoutes = [
         hidden: false,
         path: 'incomingNG',
         name: 'insideWarehouse.incomingNG',
-        meta: { title: '来料NG拆标', icon: 'grounding', hidden: false },
+        meta: { title: '来料NG拆标', icon: 'grounding', hidden: false, roles: ['insideWarehouse.incomingNG'] },
         component: 'insideWarehouse/incomingNG/index'
       },
       // {
@@ -277,7 +277,7 @@ export const asyncRoutes = [
       //   hidden: false,
       //   path: 'qualityInspection',
       //   name: 'insideWarehouse.qualityInspection',
-      //   meta: { title: '在库质检', icon: 'grounding', hidden: false },
+      //   meta: { title: '在库质检', icon: 'grounding', hidden: false , roles: ['insideWarehouse.qualityInspection'] },
       //   component: 'insideWarehouse/qualityInspection/index'
       // },
       {
@@ -285,7 +285,7 @@ export const asyncRoutes = [
         hidden: false,
         path: 'materialLnventory',
         name: 'insideWarehouse.materialLnventory',
-        meta: { title: '物料盘点', icon: 'grounding', hidden: false },
+        meta: { title: '物料盘点', icon: 'grounding', hidden: false, roles: ['insideWarehouse.materialLnventory'] },
         component: 'insideWarehouse/materialLnventory/index'
       },
       {
@@ -293,7 +293,7 @@ export const asyncRoutes = [
         hidden: false,
         path: 'vehicleCleaning',
         name: 'insideWarehouse.vehicleCleaning',
-        meta: { title: '载具清洗', icon: 'grounding', hidden: false },
+        meta: { title: '载具清洗', icon: 'grounding', hidden: false, roles: ['insideWarehouse.vehicleCleaning'] },
         component: 'insideWarehouse/vehicleCleaning/index'
       }
     ]
@@ -304,7 +304,7 @@ export const asyncRoutes = [
     path: '/query',
     name: 'query',
     redirect: '/query/index',
-    meta: { title: '查询业务', icon: 'query', hidden: false },
+    meta: { title: '查询业务', icon: 'query', hidden: false, roles: ['query'] },
     component: 'Layout',
     children: [
       {
@@ -312,7 +312,7 @@ export const asyncRoutes = [
         hidden: false,
         path: 'numberQuery',
         name: 'query.numberQuery',
-        meta: { title: '料号查询', icon: 'grounding', hidden: false },
+        meta: { title: '料号查询', icon: 'grounding', hidden: false, roles: ['query.numberQuery'] },
         component: 'query/numberQuery/index'
       },
       {
@@ -320,7 +320,7 @@ export const asyncRoutes = [
         hidden: false,
         path: 'batchQuery',
         name: 'query.batchQuery',
-        meta: { title: '批次查询', icon: 'grounding', hidden: false },
+        meta: { title: '批次查询', icon: 'grounding', hidden: false, roles: ['query.batchQuery'] },
         component: 'query/batchQuery/index'
       },
       {
@@ -328,7 +328,7 @@ export const asyncRoutes = [
         hidden: false,
         path: 'goodsQuery',
         name: 'query.goodsQuery',
-        meta: { title: '货位查询', icon: 'grounding', hidden: false },
+        meta: { title: '货位查询', icon: 'grounding', hidden: false, roles: ['query.goodsQuery'] },
         component: 'query/goodsQuery/index'
       }
     ]

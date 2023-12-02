@@ -47,6 +47,14 @@
                 {{ form[item.prop] }}
               </div>
             <!-- </div> -->
+            <div  v-if="item.type === 'Ischecked'" style="display:inline-block; width: 100%;line-height:40px;border-bottom: 1px solid rgb(238, 238, 238)">
+              <span>{{item.label}}</span>
+              <div style="display:inline-block;"><van-checkbox  :name="item.prop" shape="square">{{ form[item.prop] }}</van-checkbox></div>
+            </div>
+            <div  v-if="item.type === 'IsUnit'" style="display:inline-block; width: 100%;line-height:40px;border-bottom: 1px solid rgb(238, 238, 238)">
+              <span>{{item.label}}</span>
+              <span> {{ form[item.prop] }}</span>
+            </div>
           </van-col>
         </van-row>
       </van-cell>

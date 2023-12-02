@@ -57,9 +57,15 @@ export const formList: Array<FormConfigText> = [
     type: 'Select',
     label: '仓库',
     prop: 'warehouse',
-    span: 18,
+    span: 20,
     options: [],
     optionsTwo: []
+  },
+  {
+    type: 'Ischecked',
+    label: '盲盘',
+    prop: 'hideBox',
+    span: 4
   },
   {
     type: 'Text',
@@ -87,7 +93,19 @@ export const formList: Array<FormConfigText> = [
     rules: [{ required: true, message: '请输入条码', trigger: 'onBlur' }]
   },
   {
-    type: 'Text',
+    type: 'Input',
+    label: '实盘数量',
+    prop: 'realNum',
+    span: 16
+  },
+  {
+    type: 'IsUnit',
+    label: '单位',
+    prop: 'unit',
+    span: 8
+  },
+  {
+    type: 'Message',
     label: '消息',
     prop: 'message',
     span: 24

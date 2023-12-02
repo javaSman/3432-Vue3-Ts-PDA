@@ -6,7 +6,7 @@
         width="12rem"
         height="12rem"
         fit="cover"
-        :src="require('@/assets/images/lyric.png')"
+        :src="require('@/assets/images/yaoning2.png')"
         style="margin-bottom: 1rem"
       />
       <van-form ref="loginForm" class="login-form" autocomplete="on" :show-error="false" @submit="handleSubmit">

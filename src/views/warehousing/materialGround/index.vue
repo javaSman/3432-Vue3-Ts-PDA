@@ -73,11 +73,6 @@ const columns = [
     key: 'time',
     slot: 'time'
   },
-  // {
-  //   title: '最高出价',
-  //   key: 'highestPrice',
-  //   slot: 'highestPrice',
-  // },
   {
     title: '',
     key: 'delete',
@@ -85,26 +80,6 @@ const columns = [
   }
 ]
 const dataList = [] as any
-// {
-//   barcode: '条码1',
-//   quantity: '200',
-//   lowestPrice: '2023-06-01',
-//   highestPrice: '2.35',
-// },
-// {
-//   barcode: '条码2',
-//   quantity: '150',
-//   lowestPrice: '2023-06-02',
-//   highestPrice: '3.35',
-// },
-// {
-//   barcode: '条码3',
-//   quantity: '180',
-//   lowestPrice: '2023-06-03',
-//   highestPrice: '2.35',
-// },
-// ]
-// const search = ref('')
 const barcodes = ref([])
 const APIName = 'business'
 const active = ref(0)
@@ -113,7 +88,6 @@ let dataMap = reactive({
   detailsList,
   form: {} as any,
   detailsForm: {} as any,
-  // detailsForm: { inApplyforEBELN: '123455', inApplyforEBELP: '1',num: 0 },
   columns: columns,
   dataList: [] as any,
   loading: false,
@@ -149,29 +123,11 @@ function getDict(val) {
     array.forEach((item) => {
       item.label = item.warehouseName
       item.value = item.warehouseID
-      // item.boxID?dataMap.formList[4].type = 'Text':dataMap.formList[4].type = 'Input'
-      // form.value.boxId = item.boxID
-      // if(item.warehouseType === 'Shelf'){
-      //   debugger
-      //   dataMap.formList[3].isHide = false
-      // }else{
-      //   dataMap.formList[3].isHide = true
-      // }
     })
     dataMap.formList[1].options = array
     dataMap.formList[1].optionsTwo = JSON.parse(JSON.stringify(array))
   })
 }
-// dataMap.formList[1].change = getChange
-// function getChange() {
-//   dataMap.formList[1].options.forEach((item) => {
-//     if(form.value.warehouseID === item.warehouseID){
-//       // console.log(form.value.warehouseID === item.warehouseID)
-//       // item.boxID?dataMap.formList[4].type = 'Text':dataMap.formList[4].type = 'Input'
-//         form.value.boxId = item.boxID
-//     }
-//   })
-// }
 dataMap.formList[2].enter = getLocation
 // 获取货位编码
 function getLocation() {
@@ -246,9 +202,6 @@ function getBarcode() {
       }
       dataMap.dataList = newArr
       dataMap.detailsForm.num = dataMap.dataList.length // 已扫条码数量
-      //dataMap.dataList = data
-      // console.log(res.message,'ness')
-      // console.log(form.value.message,'qqq')
     } else {
       barcodeInputRef?.focus()
       form.value.imBarcode = ''
@@ -265,6 +218,7 @@ function removeItem(item: any) {
   .then(() => {
   const index = dataMap.dataList.indexOf(item)
   dataMap.dataList.splice(index, 1)
+  dataMap.detailsForm.num = dataMap.dataList.length // 更新已扫条码数量
 })
 }
 function handleClear() {

@@ -160,6 +160,11 @@ function getOrder() {
           item.readyNum = item.rate.substring(0,item.rate.indexOf('/')) // 已备数量
         })
         dataMap.detailsForm = res.data.details
+        var newList: any = []  // 标签明细
+        res.data.header.pickBarcodeDetails.forEach((item: any) => {
+        newList.push({ barcode: item.pickBarcode, quantity: item.quantity, time: time })
+      })
+      dataMap.dataList = newList
         // getCheckcode()
       }
       // console.log(dataMap.detailsForm.length, 'details')
@@ -182,20 +187,6 @@ dataMap.formList[1].enter = getBarcode
 // 获取标签条码
 function getBarcode() {
   if (form.value.imBarcode) {
-    // if (form.value.imBarcode !== dataMap.newBarcode) {
-    //   showConfirmDialog({
-    //     title: '标题',
-    //     message: '是否替换该条码'+'【'+ dataMap.newBarcode + '】'
-    //   })
-    //     .then(() => {
-    //       // on confirm
-    //       form.value.imBarcode = dataMap.newBarcode
-    //     })
-    //     .catch(() => {
-    //       // on cancel
-    //       form.value.imBarcode = form.value.imBarcode
-    //     })
-    // }
     //固废标签带有#的直接截取最后一个#后面的值，否则拿原有的值
     let Barcode = ''
     if (form.value.imBarcode.indexOf('#') !== -1) {
@@ -203,36 +194,7 @@ function getBarcode() {
     } else {
       Barcode = form.value.imBarcode
     }
-    WMSAPI.get(
-      APIName,
-      { PickId: form.value.purchaseOrder, Barcode: Barcode },
-      'pda/GetPoInApplyforMaterialByBarcode'
-    ).then((res) => {
-      if (res.success == true) {
-        form.value.message = res.message as string
-        if (res.result == 0) {
-          pickBarcode(Barcode)
-        } else if (res.result == 1) {
-          form.value.imBarcode = ''
-          showConfirmDialog({
-            title: '标题',
-            message: '推荐条码是【' + res.data[1].barcode + '】,是否使用当前条码【' + res.data[0].barcode + '】'
-          })
-            .then(() => {
-              // on confirm
-              form.value.imBarcode = ''
-              pickBarcode(res.data[0].barcode)
-            })
-            .catch(() => {
-              // on cancel
-              form.value.imBarcode = ''
-              // pickBarcode(res.data[].barcode)
-            })
-        }
-      } else {
-        form.value.message = res.message as string
-      }
-    })
+    pickBarcode(Barcode)
   } else {
     form.value.message = '请输入标签条码'
   }
@@ -246,10 +208,27 @@ function pickBarcode(val) {
   }
   let data = {
     pickID: form.value.purchaseOrder,
-    barcode: Barcode
+    barcode: Barcode,
+    isCheckBatch: true
   }
   WMSAPI.post(APIName, data, 'pickorder/PickBarCode').then((res) => {
-    if (res.success == true) {
+    if(res.success === true && res.result != 101) {
+      form.value.message = res.message as string
+      var newList: any = []
+      res.data.pickBarcodeDetails.forEach((item: any) => {
+        newList.push({ barcode: item.pickBarcode, quantity: item.quantity, time: time })
+      })
+      // console.log(newList, 'newList')
+      dataMap.dataList = newList
+    }
+    else if (res.success === true && res.result == 101) {
+      showConfirmDialog({
+    title: '标题',
+    message: res.message
+  })
+    .then(() => {
+     // on confirm
+     WMSAPI.post(APIName, {pickID: form.value.purchaseOrder, barcode: Barcode, isCheckBatch: false}, 'pickorder/PickBarCode').then((res) => {
       getOrder()
       form.value.message = res.message as string
       //dataMap.dataList.push({ barcode: res.data.pickBarcodes, quantity: res.data.quantity as Number, time: time })
@@ -257,7 +236,7 @@ function pickBarcode(val) {
       res.data.pickBarcodeDetails.forEach((item: any) => {
         newList.push({ barcode: item.pickBarcode, quantity: item.quantity, time: time })
       })
-      console.log(newList, 'newList')
+      // console.log(newList, 'newList')
       dataMap.dataList = newList
       let arr = dataMap.dataList
       let newArr = [] as any
@@ -272,9 +251,14 @@ function pickBarcode(val) {
           _showFailToast('条码不能重复扫描')
         }
       }
-      console.log(newArr, 'newArr')
+      // console.log(newArr, 'newArr')
       dataMap.dataList = newArr
       form.value.imBarcode = ''
+     })
+    })
+    .catch(() => {
+      form.value.imBarcode = ''
+    })
     } else {
       form.value.message = res.message as string
     }

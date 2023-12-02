@@ -1,8 +1,9 @@
-s<template>
+s
+<template>
   <div class="content">
     <van-row :style="{ background: list.rate == 100 ? '#D9F7BE' : '#ffffff' }">
       <van-col span="6">行号:{{ list.pickItemNo }}</van-col>
-      <van-col span="11" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+      <van-col span="11" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis">
         <!-- <van-notice-bar
           :scrollable="true"
           class="notice"
@@ -12,12 +13,10 @@ s<template>
         物料描述:{{ list.materialDesc }}
       </van-col>
       <van-col span="1"><van-icon class="icon" :name="show ? 'arrow-down' : 'arrow'" @click="show = !show" /></van-col>
-        <!-- <van-collapse-item title="标题1" name="1">代码是写出来给人看的，附带能在机器上运行。</van-collapse-item> -->
+      <!-- <van-collapse-item title="标题1" name="1">代码是写出来给人看的，附带能在机器上运行。</van-collapse-item> -->
       <van-col span="6">进度:{{ list.rate }}</van-col>
     </van-row>
-    <div class="" v-show="show" style="width:100%;height:auto;">
-      物料描述:{{ list.materialDesc }}
-    </div>
+    <div class="" v-show="show" style="width: 100%; height: auto">物料描述:{{ list.materialDesc }}</div>
   </div>
 </template>
 <script lang="ts" setup name="infoVue">
@@ -72,10 +71,10 @@ let formListFiter = computed<FormConfigText[]>(() => {
   return arr
 })
 function color() {
-  debugger
+  // debugger
   console.log(props.list)
   if (props.list.schedule == 100) {
-    debugger
+    // debugger
     return 'background:#D9F7BE'
   } else {
     return 'background:#ffffff'

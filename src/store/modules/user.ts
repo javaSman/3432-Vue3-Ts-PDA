@@ -17,6 +17,7 @@ export const useUserStore = defineStore({
     // 第一次加载菜单时用到
     loadMenus: false,
     menus: [],
+    interfaceMenu: [], // 菜单权限
     noAuth: false, // 判断当前是否有菜单权限，true 为没有
     // 快捷菜单
     homeMenus: [],
@@ -36,19 +37,14 @@ export const useUserStore = defineStore({
     Login(_data: any) {
       return new Promise((resolve, reject) => {
         WMSLogin(_data)
-          .then(async(res: any) => {
+          .then(async (res: any) => {
             if (!res.access_token) {
               // 调用reject方法后，Promise状态变为rejected，即操作失败状态
               reject('登录失败')
               return
             }
-            // let _res = res.data.data
-            // let _res = { account: 'admin', name: 'admin' }
-            let permission = []
-            let result = await getAuthInfo()
-            // console.log(result)
-            // debugger
-            permission = result
+            this.getAuthInfo()
+
             // commit('SET_USER_INFO', permission)
             this.getVersion()
             this.getUserInfo()
@@ -84,36 +80,34 @@ export const useUserStore = defineStore({
     // 获取用户
     // 获取用户信息
     getUserInfo() {
-      WMSAPI.get('identity',{},'my-profile').then(res => {
-        let _res = { account:  res.userName, name: res.name }
+      WMSAPI.get('identity', {}, 'my-profile').then((res) => {
+        let _res = { account: res.userName, name: res.name }
         localStorage.setItem('userInfo', JSON.stringify(_res))
         setUserInfo(_res)
       })
-      },
-      getVersion() {
-        WMSAPI.get('business', { }, 'AppVersion/all').then((res) => {
-          let version = res.items as any[]
-          // localStorage.setItem('version', version[0].version)
-          if (process.env.NODE_ENV === 'production') {
-            // 生产环境的代码
-            let env = '测试'
-            localStorage.setItem('version',version[0].version+"             "+'('+env+')')
-          } else if (process.env.NODE_ENV === 'development') {
-            // 测试环境的代码
-            let env = '测试'
-            localStorage.setItem('version',version[0].version+"              "+'('+env+')')
-          }
-        })
-      },
-      // getEnv() {
-      //   if (process.env.NODE_ENV === 'production') {
-      //   // 生产环境的代码
-        
-      // } else if (process.env.NODE_ENV === 'development') {
-      //   debugger
-      //   // 测试环境的代码
-      // }
-      // },
+    },
+    // 获取用户权限
+    getAuthInfo() {
+      getAuthInfo().then((res) => {
+        sessionStorage.setItem('interfaceMenu', JSON.stringify(res.auth.grantedPolicies))
+      })
+    },
+
+    getVersion() {
+      WMSAPI.get('business', {}, 'AppVersion/all').then((res) => {
+        let version = res.items as any[]
+        // localStorage.setItem('version', version[0].version)
+        if (process.env.NODE_ENV === 'production') {
+          // 生产环境的代码
+          let env = '正式'
+          localStorage.setItem('version', version[0].version + '             ' + '(' + env + ')')
+        } else if (process.env.NODE_ENV === 'development') {
+          // 测试环境的代码
+          let env = '测试'
+          localStorage.setItem('version', version[0].version + '              ' + '(' + env + ')')
+        }
+      })
+    },
     GetInfo() {
       // 刷新页面再次加载菜单前需要获取当前用户信息
       let userInfo = localStorage.getItem('userInfo')
@@ -127,6 +121,7 @@ export const useUserStore = defineStore({
         let _info = JSON.parse(userInfo)
         this.token = getToken()
         this.menus = asyncRoutes
+        this.getAuthInfo()
         // 重新加载用户信息
         setUserInfo(_info)
         return true
@@ -184,6 +179,7 @@ export const useUserStore = defineStore({
     },
     updateLoadMenus() {
       return new Promise(() => {
+        this.menus = asyncRoutes
         this.loadMenus = false
       })
     }

@@ -1,7 +1,7 @@
 <template>
   <div class="layout-flex-container">
     <!-- 顶部导航栏 -->
-    <NavBarVue :title="title" :leftArrow="leftArrow"/>
+    <NavBarVue :title="title" :leftArrow="leftArrow" />
     <!-- 子路由出口 -->
     <div class="layout-flex-main">
       <router-view />
@@ -10,7 +10,7 @@
     <!-- 底部提示 -->
     <!-- <FootBar class="layout-flex-footer" /> -->
     <!-- 底部导航栏 -->
-<!-- <div class="footer-bar">
+    <!-- <div class="footer-bar">
 <van-tabbar v-model="active" route placeholder active-color="rgb(22, 119, 255)">
       <van-tabbar-item  to="/dashboard">
        <span>首页</span>
@@ -57,7 +57,7 @@ let el = _this.appContext.config.globalProperties
 
 // console.log(el.$route)
 const title = ref<string>(el.$route.meta.title as string)
-console.log(title,'title')
+// console.log(title,'title')
 const leftArrow = ref<boolean>(el.$route.name !== 'Dashboard')
 const version = ref<boolean>(el.$route.name !== 'Dashboard')
 // debugger
@@ -100,7 +100,7 @@ watch(
     padding-bottom: 5px;
   }
 }
-.footer-bar{
+.footer-bar {
   width: 100%;
   height: 50px;
   position: fixed;

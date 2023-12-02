@@ -1,31 +1,33 @@
 <template>
-   <!-- <van-field v-model="label" readonly :name="item.prop" :label="item.label"
+  <!-- <van-field v-model="label" readonly :name="item.prop" :label="item.label"
       :required="item.rules && item.rules.length > 0" is-link/> -->
-  <van-row v-for="(item, index) in supplierConfig" :key="index"  v-show="index<2">
+  <van-row v-for="(item, index) in supplierConfig" :key="index" v-show="index < 2">
     <van-col span="1">
       <van-icon class="icon" name="minus" @click.prevent="removeSupplierConfig(item)" />
     </van-col>
     <van-col span="14">
-      <van-field v-model="item.supplierBatch"  label="供应商批次" label-width="60" placeholder="请输入" clearable/>
+      <van-field v-model="item.supplierBatch" label="供应商批次" label-width="60" placeholder="请输入" clearable />
     </van-col>
-    <van-col span="8"><van-field v-model="item.receivingNum"  label="实收" label-width="30" placeholder="请输入" clearable/>
-      </van-col>
+    <van-col span="8">
+      <van-field v-model="item.receivingNum" label="实收" label-width="30" placeholder="请输入" clearable />
+    </van-col>
     <van-col span="1">
       <!-- <van-icon class="icon" name="plus" @click="addSupplierConfig" /> -->
       <van-icon class="icon" name="plus" @click="addSupplierConfig(index)" />
-      <van-icon v-if="index===1" class="icon" :name="show ? 'arrow-down' : 'arrow'" @click="show = !show" />
+      <van-icon v-if="index === 1" class="icon" :name="show ? 'arrow-down' : 'arrow'" @click="show = !show" />
     </van-col>
     <!-- <van-col span="8">span: 8</van-col> -->
   </van-row>
   <div v-show="show">
-    <van-row v-for="(item, index3) in  supplierConfig.slice(2)" :key="index2">
+    <van-row v-for="(item, index3) in supplierConfig.slice(2)" :key="index2">
       <van-col span="1">
         <van-icon class="icon" name="minus" @click.prevent="removeSupplierConfig(item)" />
       </van-col>
       <van-col span="14">
-        <van-field v-model="item.supplierBatch"  label="供应商批次" label-width="60" placeholder="请输入" clearable/>
+        <van-field v-model="item.supplierBatch" label="供应商批次" label-width="60" placeholder="请输入" clearable />
       </van-col>
-      <van-col span="8"><van-field v-model="item.receivingNum"  label="实收" label-width="30" placeholder="请输入" clearable/>
+      <van-col span="8">
+        <van-field v-model="item.receivingNum" label="实收" label-width="30" placeholder="请输入" clearable />
       </van-col>
       <van-col span="1">
         <van-icon class="icon" name="plus" @click="addSupplierConfig(index3)" />
@@ -34,20 +36,19 @@
       <!-- <van-col span="8">span: 8</van-col> -->
     </van-row>
   </div>
-  
 </template>
 <script setup>
 import { showConfirmDialog } from 'vant'
 import { _showFailToast } from '@/utils/message'
-import { PropType, reactive, toRefs, ref, onMounted } from 'vue'
+import { reactive, toRefs, ref } from 'vue'
 let props = defineProps({
   supplierConfig: { type: Array, default: [] }, // 信息条目索引
   supplierIndex: { type: Number, default: 0 }, // 信息条目索引
-  detailsForm: { type: Array, default: [] }, 
+  detailsForm: { type: Array, default: [] }
 })
 // 参数声明
 const show = ref(false)
-const formRef = ref(null)
+// const formRef = ref(null)
 const state = reactive({
   val: '',
   // list: [] as any,
@@ -80,17 +81,17 @@ const addSupplierConfig = (val) => {
   // console.log(props.supplierIndex)
   // console.log(props.supplierConfig)
   // console.log(props.detailsForms)
-  const copiedSupplierConfig = JSON.parse(JSON.stringify(props.supplierConfig));
+  const copiedSupplierConfig = JSON.parse(JSON.stringify(props.supplierConfig))
 
-// 修改深拷贝的对象
-copiedSupplierConfig.push({
-  supplierBatch: '',
-  receivingNum: ''
-});
-// console.log(copiedSupplierConfig);
-// debugger
+  // 修改深拷贝的对象
+  copiedSupplierConfig.push({
+    supplierBatch: '',
+    receivingNum: ''
+  })
+  // console.log(copiedSupplierConfig);
+  // debugger
   props.detailsForm[props.supplierIndex].multiLine = copiedSupplierConfig
-  
+
   //   props.supplierConfig.push({
   //    supplierBatch: '',
   //    receivingNum: ''
@@ -110,23 +111,21 @@ copiedSupplierConfig.push({
 
 const removeSupplierConfig = (item) => {
   showConfirmDialog({
-  title: '标题',
-  message:
-    '确定要删除吗？',
-})
-  .then(() => {
-    // on confirm
-     // 删除行
-  const index = props.supplierConfig.indexOf(item)
-  if (index !== 0) {
-    props.supplierConfig.splice(index, 1)
-  }else{
-    _showFailToast('至少保留一项！')
-  }
+    title: '标题',
+    message: '确定要删除吗？'
   })
-  .catch(() => {
-    // on cancel
-  });
+    .then(() => {
+      // 删除行
+      const index = props.supplierConfig.indexOf(item)
+      if (props.supplierConfig.length !== 1) {
+        props.supplierConfig.splice(index, 1)
+      } else {
+        _showFailToast('至少保留一项！')
+      }
+    })
+    .catch(() => {
+      // on cancel
+    })
 }
 
 const submitForm = () => {

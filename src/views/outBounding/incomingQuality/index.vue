@@ -2,7 +2,7 @@
   <FormVue class="form" ref="formComponent" v-model:formData="form" :formList="dataMap.formList" />
   <van-tabs v-model:active="active" v-if="Object.keys(dataMap.detailsForm).length !== 0">
     <van-tab title="明细">
-      <DetailsVue v-model:formData="dataMap.detailsForm" :formList="dataMap.detailsList" :label-width="60"></DetailsVue>
+      <DetailsVue v-model:formData="dataMap.detailsForm" :formList="dataMap.detailsList" :label-width="60" />
     </van-tab>
     <van-tab title="已扫标签" v-if="dataMap.dataList.length > 0">
       <TableContent :columns="dataMap.columns" :dataSource="dataMap.dataList" @enter="search">
@@ -24,8 +24,13 @@
       </TableContent>
     </van-tab>
   </van-tabs>
-  <ActionBarVue ref="actionBarVue" :loading="dataMap.loading" :confirmText="dataMap.confirmText" @clear="handleClear"
-    @confirm="handleConfirm" />
+  <ActionBarVue
+    ref="actionBarVue"
+    :loading="dataMap.loading"
+    :confirmText="dataMap.confirmText"
+    @clear="handleClear"
+    @confirm="handleConfirm"
+  />
 </template>
 
 <script lang="ts" setup>
@@ -34,7 +39,7 @@ import DetailsVue from '@/components/Details/index.vue'
 import TableContent from '@/components/tableContent/index.vue'
 import ActionBarVue from '@/views/businessComponents/ActionBar.vue'
 import { WMSAPI } from '@/api/generalAPI'
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted } from 'vue'
 import { formList, detailsList } from './config'
 import { showSuccessToast, showConfirmDialog } from 'vant'
 import { _showFailToast } from '@/utils/message'
@@ -45,17 +50,17 @@ const columns = [
   {
     title: '标签条码',
     key: 'barcode',
-    slot: 'barcode',
+    slot: 'barcode'
   },
   {
     title: '数量',
     key: 'quantity',
-    slot: 'quantity',
+    slot: 'quantity'
   },
   {
     title: '操作时间',
     key: 'lowestPrice',
-    slot: 'lowestPrice',
+    slot: 'lowestPrice'
   },
   // {
   //   title: '最高出价',
@@ -65,35 +70,34 @@ const columns = [
   {
     title: '',
     key: 'delete',
-    slot: 'delete',
-  },
+    slot: 'delete'
+  }
 ]
 const dataList = [
   {
     changeMsg: '条码1',
     currentPrice: '200',
     lowestPrice: '2023-06-01',
-    highestPrice: '2.35',
+    highestPrice: '2.35'
   },
   {
     changeMsg: '条码2',
     currentPrice: '150',
     lowestPrice: '2023-06-02',
-    highestPrice: '3.35',
+    highestPrice: '3.35'
   },
   {
     changeMsg: '条码3',
     currentPrice: '180',
     lowestPrice: '2023-06-03',
-    highestPrice: '2.35',
-  },
+    highestPrice: '2.35'
+  }
 ]
-const active = ref(0);
-const form = ref(
-  {
-    barcode: '',
-    message: ''
-  })
+const active = ref(0)
+const form = ref({
+  barcode: '',
+  message: ''
+})
 let dataMap = reactive({
   formList,
   detailsList,
@@ -109,35 +113,33 @@ onMounted(() => {
 })
 function removeItem(item: any) {
   showConfirmDialog({
-  title: '标题',
-  message:
-    '确定要删除吗？',
-})
-  .then(() => {
-  const index = dataMap.dataList.indexOf(item)
-  if (index !== -1) {
-    dataMap.dataList.splice(index, 1)
-  }
-})
+    title: '标题',
+    message: '确定要删除吗？'
+  }).then(() => {
+    const index = dataMap.dataList.indexOf(item)
+    if (index !== -1) {
+      dataMap.dataList.splice(index, 1)
+    }
+  })
 }
 dataMap.formList[0].enter = getDetails
 function getDetails() {
   if (form.value.barcode) {
     WMSAPI.get(APIName, { barcode: form.value.barcode }, 'materialsbarcode/GetBarcode').then((res) => {
-      if (res.success == true) {
+      if (res.success === true) {
         barcodeInputRef?.focus()
         form.value.barcode = ''
         dataMap.detailsForm = res.data
         form.value.message = res.message as string
         dataMap.dataList.push({ barcode: res.data.barcode, quantity: res.data.quantity })
         let arr = dataMap.dataList
-        let newArr = [] as any;
-        let obj = {} as any;
+        let newArr = [] as any
+        let obj = {} as any
         for (let i = 0; i < arr.length; i++) {
-          //将arr[i].barcode作为对象属性进行判断
+          // 将arr[i].barcode作为对象属性进行判断
           if (!obj[arr[i].barcode]) {
-            newArr.push(arr[i]);
-            obj[arr[i].barcode] = true;
+            newArr.push(arr[i])
+            obj[arr[i].barcode] = true
           }
         }
         dataMap.dataList = newArr
@@ -177,16 +179,15 @@ function handleConfirm() {
     }
     WMSAPI.post(APIName, data, 'pda/ArriveReturn').then((res) => {
       if (res && res.success) {
-        form.value.message = res.message as string
         form.value = {
           barcode: '',
-          message: ''
+          message: res.message as string
         }
         dataMap.detailsForm = {}
         dataMap.dataList = []
-
+      } else {
+        form.value.message = res.message as string
       }
-      else { form.value.message = res.message as string}
     })
   })
 }

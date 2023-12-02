@@ -1,83 +1,92 @@
 <template>
   <!-- 需要加载有权限的菜单列表 -->
   <div class="menu-container">
-  <div class="menu-block"  v-for="item in sidebarRouters">
+    <div class="menu-block" v-for="item in sidebarRouters" :key="item">
       <!-- 菜单大标题 -->
       <div class="menu-title">
-      <span>{{item.meta.title }}</span>
+        <span>{{ item.meta.title }}</span>
+      </div>
+      <van-grid column-num="3" :gutter="5" :border="false">
+        <van-grid-item
+          v-for="menu in item.children"
+          v-show="menu.alwaysShow"
+          :key="menu.meta?.title"
+          :text="menu.meta?.title"
+          class="border-grid"
+          @click="handleToSecond(menu)"
+        >
+          <!-- <van-image fit="fill" :src="require(`@/assets/img/${menu.meta?.icon || 'lyric'}.png`)" /> -->
+          <div class="circle"><SvgIcon :iconFileName="menu.meta?.icon" /></div>
+
+          <div class="circle-title">{{ menu.meta?.title }}</div>
+        </van-grid-item>
+      </van-grid>
     </div>
-  <van-grid column-num="3" :gutter="5" :border="false">
-    <van-grid-item
-      v-for="menu in item.children"
-      :key="menu.meta?.title"
-      :text="menu.meta?.title"
-      class="border-grid"
-      @click="handleToSecond(menu)"
-    >
-      <!-- <van-image fit="fill" :src="require(`@/assets/img/${menu.meta?.icon || 'lyric'}.png`)" /> -->
-         <div class="circle"> <SvgIcon :iconFileName="menu.meta?.icon" /></div>
-      
-       <div class="circle-title">{{ menu.meta?.title }}</div>
-    </van-grid-item>
-  </van-grid>
-</div>
-</div>
-<!-- 底部导航栏 -->
-<div class="footer-bar">
-<van-tabbar v-model="active" route placeholder active-color="rgb(22, 119, 255)">
-      <van-tabbar-item  to="/dashboard">
-       <span>首页</span>
-    <template #icon="props">
-      <img :src="props.active ? iconHome.active : iconHome.inactive" />
-    </template>
+  </div>
+  <!-- 底部导航栏 -->
+  <div class="footer-bar">
+    <van-tabbar v-model="active" route placeholder active-color="rgb(22, 119, 255)">
+      <van-tabbar-item to="/dashboard">
+        <span>首页</span>
+        <template #icon="props">
+          <img :src="props.active ? iconHome.active : iconHome.inactive" />
+        </template>
       </van-tabbar-item>
       <van-tabbar-item icon="manager-o" to="/center">
         <span>我的</span>
-    <template #icon="props">
-      <img :src="props.active ? iconMine.active : iconMine.inactive" />
-    </template>
+        <template #icon="props">
+          <img :src="props.active ? iconMine.active : iconMine.inactive" />
+        </template>
       </van-tabbar-item>
     </van-tabbar>
   </div>
-    <!-- /底部导航栏 -->
+  <!-- /底部导航栏 -->
 </template>
 
 <script lang="ts" setup name="Dashboard">
 import SvgIcon from '@/components/SvgIcon/index.vue'
 import { computed, getCurrentInstance, ComponentInternalInstance, ref } from 'vue'
 import useStore from '@/store'
-import { _showFailToast } from '@/utils/message'
 const { permission } = useStore()
 const active = ref(0)
 const iconHome = {
-      active: require('../../../assets/images/homeActive.png'),
-      inactive:
-      require('../../../assets/images/home.png'),
-    };
-    const iconMine = {
-      active: require('../../../assets/images/mineActive.png'),
-      inactive:
-      require('../../../assets/images/mine.png'),
-    };
+  active: require('../../../assets/images/homeActive.png'),
+  inactive: require('../../../assets/images/home.png')
+}
+const iconMine = {
+  active: require('../../../assets/images/mineActive.png'),
+  inactive: require('../../../assets/images/mine.png')
+}
 let _this = getCurrentInstance() as ComponentInternalInstance
 let el = _this.appContext.config.globalProperties
 
 const sidebarRouters = computed<any[]>(() => {
+  const interfaceMenuO: any = sessionStorage.getItem('interfaceMenu')
+  const interfaceMenu = JSON.parse(interfaceMenuO)
+  const sidebarRoutersa = JSON.parse(JSON.stringify(permission.sidebarRouters))
   let list: any[] = []
-  permission.sidebarRouters.forEach((item) => {
-    if (!item.meta || !item.meta.hidden) list.push(item)
+  const judgeAuthMethods = (data: any) => {
+    data.map((item: any) => {
+      item.alwaysShow = interfaceMenu[item.name] || false // 为true的时候就展示
+      if (item.alwaysShow && item.children && item.children.length > 0) {
+        judgeAuthMethods(item.children)
+      }
+    })
+  }
+  judgeAuthMethods(sidebarRoutersa)
+  sidebarRoutersa.forEach((item: any) => {
+    if (item.alwaysShow) list.push(item)
   })
-  console.log(list)
+
   return list
 })
 
 function handleToSecond(item: any) {
-  console.log(item,'113')
   if (item.meta) {
     // el?.$router.push({ name: 'second', query: { name: item.name, text: item.meta.title,level:'second'} })
-    el?.$router.push({ path: item.name.replace(".","/")})
+    el?.$router.push({ path: item.name.replace('.', '/') })
   } else {
-    el?.$router.push({ name: 'second'})
+    el?.$router.push({ name: 'second' })
   }
 }
 </script>
@@ -129,17 +138,17 @@ function handleToSecond(item: any) {
   font-size: 25px;
 }
 .circle {
- width: 50px;
- height: 50px;
- border-radius: 50px;
- background-color: rgb(22, 119, 255);
- text-align: center;
- line-height: 50px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50px;
+  background-color: rgb(22, 119, 255);
+  text-align: center;
+  line-height: 50px;
 }
-.circle-title{
+.circle-title {
   height: 34px;
 }
-.footer-bar{
+.footer-bar {
   width: 100%;
   height: 50px;
   position: fixed;

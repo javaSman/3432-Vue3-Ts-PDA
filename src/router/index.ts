@@ -75,17 +75,8 @@ export const loadMenus = (next: any, to: any) => {
   const { user, permission } = useStore()
   // 保存菜单(下面会 改变路由的配置，所以要深拷贝)
   let _menus1 = JSON.parse(JSON.stringify(user.menus))
+
   // 刷新页面，根据缓存的activeApps 显示对应的菜单
-  let currentService = sessionStorage.getItem('activeApps')
-  if (currentService) {
-    _menus1.map((item: any) => {
-      if (item.application === currentService || item.application === undefined) {
-        item.hidden = false
-      } else {
-        item.hidden = true
-      }
-    })
-  }
 
   new Promise((resolve) => {
     generatorDynamicRouter(_menus1).then((routers: any) => {
