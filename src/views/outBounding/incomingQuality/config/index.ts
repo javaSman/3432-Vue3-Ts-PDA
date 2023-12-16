@@ -55,7 +55,7 @@ export const formList: Array<FormConfig> = [
   {
     type: 'Input',
     label: '标签条码',
-    prop: 'barcode',
+    prop: 'barcode'
     // rules: [{ required: true, message: '请输入标签条码', trigger: 'onBlur' }]
   },
   {

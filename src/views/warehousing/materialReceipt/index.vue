@@ -60,10 +60,7 @@ import TableDialogVue from '@/views/businessComponents/TableDialog.vue'
 import { WMSAPI } from '@/api/generalAPI'
 import { ref, reactive, onMounted } from 'vue'
 import Dates from '@/utils/datetime'
-import { formList, detailsList, showFormList, tableColumn } from './config'
-import { ITableBtnParams, TableColumn } from '@/typing'
-import { getPartList, partListTableColumn } from '@/views/mixins/PartList'
-import { showSuccessToast } from 'vant'
+import { formList, detailsList } from './config'
 import { _showFailToast } from '@/utils/message'
 
 let formComponent = ref<InstanceType<typeof FormVue> | null>(null)
@@ -172,7 +169,7 @@ function getDetails() {
         dataMap.detailsForm = res.data.details as any[]
         dataMap.detailsFormClone = JSON.parse(JSON.stringify(dataMap.detailsForm))
         form.value.message = res.message as string
-        form.value.supplierName = res.data.header.supplierName as string
+        form.value.supplierName = (res.data.header.supplierCode + '-' + res.data.header.supplierName) as string
         dataMap.supplierCode = res.data.header.supplierCode as string
         dataMap.detailsForm.forEach((item: any, index) => {
           item.quantity === item.receivingQuantity
@@ -199,7 +196,7 @@ function getDetails() {
 // 获取货位编码
 function getLocation() {
   WMSAPI.get(APIName, { LocationID: form.value.locID }, 'pda/GetLocationsInfo').then((res) => {
-    if (res.success == false || res.success == true) form.value.message = res.message as string
+    if (res.success) form.value.message = res.message as string
   })
 }
 dataMap.formList[2].enter = getMaterial

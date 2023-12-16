@@ -2,7 +2,7 @@
   <FormVue class="form" ref="formComponent" v-model:formData="form" :formList="dataMap.formList" />
   <van-tabs v-model:active="active" v-if="Object.keys(dataMap.detailsForm).length !== 0">
     <van-tab title="明细">
-      <DetailsVue v-model:formData="dataMap.detailsForm" :formList="dataMap.detailsList" :label-width="60"></DetailsVue>
+      <DetailsVue v-model:formData="dataMap.detailsForm" :formList="dataMap.detailsList" :label-width="60" />
     </van-tab>
     <van-tab title="已扫标签" v-if="dataMap.dataList.length > 0">
       <TableContent :columns="dataMap.columns" :dataSource="dataMap.dataList" @enter="search">
@@ -43,8 +43,10 @@ import { ref, reactive, onMounted } from 'vue'
 import Dates from '@/utils/datetime'
 import { validateBarcode } from '@/utils/validate'
 import { formList, detailsList } from './config'
-import { showSuccessToast, showConfirmDialog } from 'vant'
+import { showConfirmDialog } from 'vant'
 import { _showFailToast } from '@/utils/message'
+import { FieldInstance } from 'vant'
+
 const formComponent = ref<InstanceType<typeof FormVue> | null>(null)
 let barcodeInputRef: FieldInstance | null = null
 const today = new Dates(new Date()).strftime('YYYY-MM-DD')
@@ -79,7 +81,6 @@ const columns = [
     slot: 'delete'
   }
 ]
-const dataList = [] as any
 const barcodes = ref([])
 const APIName = 'business'
 const active = ref(0)
@@ -103,18 +104,18 @@ onMounted(() => {
   // imBarcode.focus()
 })
 // 获取日期权限
-function getDateAuthority(){
+function getDateAuthority() {
   let userInfo = localStorage.getItem('userInfo')
   let text = eval('(' + userInfo + ')')
   WMSAPI.get(APIName, { userName: text.account }, 'pda/GetAuthority').then((res) => {
-       if(res.success) dataMap.formList[4].type = 'Calendar'
-       else dataMap.formList[4].type = 'Text'
+    if (res.success) dataMap.formList[4].type = 'Calendar'
+    else dataMap.formList[4].type = 'Text'
   })
 }
 // 获取仓库
-function getDict(val) {
-  WMSAPI.get(APIName, { IsPage: false,MaterialsGroup: val.materialGroup }, 'warehouse/all').then((res) => {
-    if(res.items.length === 0){
+function getDict(val: any) {
+  WMSAPI.get(APIName, { IsPage: false, MaterialsGroup: val.materialGroup }, 'warehouse/all').then((res: any) => {
+    if (res.items.length === 0) {
       form.value.message = '请在web仓库管理配置物料组!'
       return
     }
@@ -128,14 +129,12 @@ function getDict(val) {
     dataMap.formList[1].optionsTwo = JSON.parse(JSON.stringify(array))
   })
 }
-dataMap.formList[2].enter = getLocation
+dataMap.formList[3].enter = getLocation
 // 获取货位编码
 function getLocation() {
   if (form.value.locationId) {
     WMSAPI.get(APIName, { LocationID: form.value.locationId }, 'pda/GetLocationsInfo').then((res) => {
-      if (res.success == true) {
-        form.value.message = res.message as string
-      } else {
+      if (res) {
         form.value.message = res.message as string
       }
     })
@@ -143,12 +142,18 @@ function getLocation() {
     form.value.message = '请输入货位编码'
   }
 }
-dataMap.formList[3].enter = getBox
+dataMap.formList[2].enter = getBox
 // 获取载具信息
 function getBox() {
   if (form.value.boxId) {
     WMSAPI.get(APIName, { boxID: form.value.boxId }, 'box/GetBoxInfo').then((res) => {
-      if (res.success == false || res.success == true) form.value.message = res.message as string
+      if (!res.success) {
+        form.value.boxId = ''
+        formComponent.value?.formInputRef['boxId'].inputRef?.focus()
+      } else {
+        formComponent.value?.formInputRef['locationId'].inputRef?.focus()
+      }
+      form.value.message = res.message as string
     })
   } else {
     form.value.message = '请输入载具编码'
@@ -157,34 +162,34 @@ function getBox() {
 dataMap.formList[0].enter = getBarcode
 // 获取标签条码
 function getBarcode() {
-  //固废标签带有#的直接截取最后一个#后面的值，否则拿原有的值
+  // 固废标签带有#的直接截取最后一个#后面的值，否则拿原有的值
   let Barcode = ''
-  if(form.value.imBarcode.indexOf("#") !== -1){
+  if (form.value.imBarcode.indexOf('#') !== -1) {
     Barcode = validateBarcode(form.value.imBarcode)
-  }else{
+  } else {
     Barcode = form.value.imBarcode
   }
   WMSAPI.get(APIName, { Barcode: Barcode }, 'pda/SjGetPoInApplyforMaterialByBarcode').then((res) => {
-    if (res.success == true) {
+    if (res.success) {
       getDict(res.data)
       barcodeInputRef?.focus()
       form.value.message = res.message as string
       form.value.warehouseID = res.data.warehouseID as string
-      // console.log(res.data.warehouseID)
-      form.value.boxId = res.data.boxID as string
-      form.value.locationId = res.data.locationID as string
-      dataMap.detailsForm = res.data.receiptOrderDetail
+      if (Object.keys(dataMap.detailsForm).length === 0) {
+        dataMap.detailsForm = res.data.receiptOrderDetail
+      }
       let warehouseID = ''
-      if(dataMap.dataList.length === 0){
+      if (dataMap.dataList.length === 0) {
         dataMap.deliverynoteID = res.data.deliverynoteID
         warehouseID = res.data.warehouseID
-        dataMap.dataList.push({ barcode: res.data.barcode, quantity: res.data.quantity as Number, time: time })
+        dataMap.dataList.push({ barcode: res.data.barcode, quantity: res.data.quantity as number, time: time })
         form.value.imBarcode = ''
-      }else{
-        if(res.data.deliverynoteID === dataMap.deliverynoteID){
-          dataMap.dataList.push({ barcode: res.data.barcode, quantity: res.data.quantity as Number, time: time })
+      } else {
+        if (res.data.deliverynoteID === dataMap.deliverynoteID) {
+          dataMap.dataList.push({ barcode: res.data.barcode, quantity: res.data.quantity as number, time: time })
           form.value.imBarcode = ''
-        }else{
+          dataMap.detailsForm = res.data.receiptOrderDetail
+        } else {
           form.value.message = '要在同一个申请单并且同一个仓库扫描条码！'
         }
       }
@@ -192,7 +197,7 @@ function getBarcode() {
       let newArr = [] as any
       let obj = {} as any
       for (let i = 0; i < arr.length; i++) {
-        //将arr[i].barcode作为对象属性进行判断
+        // 将arr[i].barcode作为对象属性进行判断
         if (!obj[arr[i].barcode]) {
           newArr.push(arr[i])
           obj[arr[i].barcode] = true
@@ -211,15 +216,13 @@ function getBarcode() {
 }
 function removeItem(item: any) {
   showConfirmDialog({
-  title: '标题',
-  message:
-    '确定要删除吗？',
-})
-  .then(() => {
-  const index = dataMap.dataList.indexOf(item)
-  dataMap.dataList.splice(index, 1)
-  dataMap.detailsForm.num = dataMap.dataList.length // 更新已扫条码数量
-})
+    title: '标题',
+    message: '确定要删除吗？'
+  }).then(() => {
+    const index = dataMap.dataList.indexOf(item)
+    dataMap.dataList.splice(index, 1)
+    dataMap.detailsForm.num = dataMap.dataList.length // 更新已扫条码数量
+  })
 }
 function handleClear() {
   form.value = {
@@ -248,7 +251,7 @@ function handleConfirm() {
     warehouseID: form.value.warehouseID
   }
   WMSAPI.post(APIName, data, 'pda/ArriveMaterialBandingBox').then((res) => {
-    if (res.success == true) {
+    if (res.success) {
       dataMap.loading = false
       form.value = {
         date: today,
@@ -277,8 +280,8 @@ function initConfig() {
 }
 // 搜索
 function search(value: string) {
-  //console.log(value, '1345')
-  let data = dataMap.dataList.filter((item: any) => item.barcode == value)
+  // console.log(value, '1345')
+  let data = dataMap.dataList.filter((item: any) => item.barcode === value)
   dataMap.dataList = data
 }
 </script>

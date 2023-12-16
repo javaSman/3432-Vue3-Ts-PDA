@@ -19,19 +19,17 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import FormVue from './module/Form/index.vue'
+import FormVue from '@/components/Form/index.vue'
 import DetailsVue from '@/components/Details/index.vue'
 import ActionBarVue from '@/views/businessComponents/ActionBar.vue'
 import ToggleFormVue from '@/views/businessComponents/ToggleForm.vue'
 import TableDialogVue from '@/views/businessComponents/TableDialog.vue'
-import { reactive, ref } from 'vue'
+import { reactive, ref, onMounted } from 'vue'
 import { validateBarcode } from '@/utils/validate'
 import { WMSAPI } from '@/api/generalAPI'
-import { formList, detailsList, tableColumn } from './config'
-import { ITableBtnParams, TableColumn } from '@/typing'
-import { getPartList, partListTableColumn } from '@/views/mixins/PartList'
-import { showSuccessToast } from 'vant'
-import { _showFailToast } from '@/utils/message'
+import { formList, detailsList } from './config'
+import { FieldInstance } from 'vant'
+let barcodeInputRef: FieldInstance | null = null
 let formComponent = ref<InstanceType<typeof FormVue> | null>(null)
 const APIName = 'business'
 let dataMap = reactive({
@@ -44,10 +42,23 @@ let dataMap = reactive({
   loading: false,
   confirmText: '确定'
 })
+onMounted(() => {
+  initConfig()
+})
+// 初始化配置项
+function initConfig() {
+  // 进入页面光标的位置
+  dataMap.formList.forEach((item) => {
+    if (item.prop === 'barcode') {
+      barcodeInputRef = formComponent.value?.formInputRef[item.prop].inputRef
+      barcodeInputRef?.focus()
+    }
+  })
+}
 dataMap.formList[0].enter = getDetails
 function getDetails() {
   if (dataMap.form.barcode) {
-    //固废标签带有#的直接截取最后一个#后面的值，否则拿原有的值
+    // 固废标签带有#的直接截取最后一个#后面的值，否则拿原有的值
     let Barcode = ''
     if (dataMap.form.barcode.indexOf('#') !== -1) {
       Barcode = validateBarcode(dataMap.form.barcode)
@@ -55,7 +66,10 @@ function getDetails() {
       Barcode = dataMap.form.barcode
     }
     WMSAPI.get(APIName, { barcode: Barcode }, 'materialsbarcode/GetBarcode').then((res) => {
-      if (res.success == true) dataMap.form.quantity = res.data.quantity
+      if (res.success) {
+        dataMap.form.quantity = res.data.quantity
+      }
+      dataMap.form.message = res.message as string
     })
   } else {
     // form.value.message = '请输入单据号'
@@ -72,6 +86,9 @@ function handleClear() {
 }
 function handleConfirm() {
   formComponent.value?.refForm.validate().then(() => {
+    if (dataMap.form.barcode.indexOf('#') !== -1) {
+      dataMap.form.barcode = validateBarcode(dataMap.form.barcode)
+    }
     let data = {
       barcode: dataMap.form.barcode,
       quantity: dataMap.form.spliceQuantity
@@ -79,10 +96,10 @@ function handleConfirm() {
     }
     WMSAPI.post(APIName, data, 'pda/ArriveNGApartLabel').then((res) => {
       if (res && res.success) {
-        showSuccessToast(res.message as string)
         dataMap.form = {}
+        dataMap.form.message = res.message as string
       } else {
-        _showFailToast(res.message as string)
+        dataMap.form.message = res.message as string
       }
     })
   })

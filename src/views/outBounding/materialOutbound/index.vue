@@ -3,7 +3,13 @@
   <van-tabs v-model:active="active" v-if="dataMap.detailsForm.length > 0">
     <van-tab title="备料明细">
       <!-- <InfoVue v-for="(item, index) in dataMap.detailsForm" :key="index" :list="dataMap.detailsForm[index]"></InfoVue> -->
-      <DetailsVue v-for="(item, index) in dataMap.detailsForm" :key="index" v-model:formData="dataMap.detailsForm[index]" :formList="dataMap.detailsList" :label-width="60"></DetailsVue>
+      <DetailsVue
+        v-for="(item, index) in dataMap.detailsForm"
+        :key="index"
+        v-model:formData="dataMap.detailsForm[index]"
+        :formList="dataMap.detailsList"
+        :label-width="60"
+      />
     </van-tab>
     <van-tab title="已扫标签" v-if="dataMap.dataList.length > 0">
       <TableContent :columns="dataMap.columns" :dataSource="dataMap.dataList" @enter="search">
@@ -56,11 +62,6 @@ const form = ref({
   imBarcode: '',
   message: ''
 })
-const listArray = ref({
-  pickItemNo: '',
-  materialDesc: '',
-  schedule: ''
-})
 const columns = [
   {
     title: '标签条码',
@@ -86,26 +87,6 @@ const columns = [
     title: '',
     key: 'delete',
     slot: 'delete'
-  }
-]
-const dataList = [
-  {
-    barcode: '条码1',
-    quantity: '200',
-    lowestPrice: '2023-06-01',
-    highestPrice: '2.35'
-  },
-  {
-    barcode: '条码2',
-    quantity: '150',
-    lowestPrice: '2023-06-02',
-    highestPrice: '3.35'
-  },
-  {
-    barcode: '条码3',
-    quantity: '180',
-    lowestPrice: '2023-06-03',
-    highestPrice: '2.35'
   }
 ]
 const APIName = 'business'
@@ -155,16 +136,16 @@ function getOrder() {
     WMSAPI.get(APIName, { PickID: form.value.purchaseOrder }, 'pickorder/GetDetails/PDA').then((res) => {
       let imBarcode = formComponent.value?.formInputRef.imBarcode.inputRef
       imBarcode.focus()
-      if (res.success == true) {
-        res.data.details.forEach(item => {
-          item.readyNum = item.rate.substring(0,item.rate.indexOf('/')) // 已备数量
+      if (res.success) {
+        res.data.details.forEach((item: any) => {
+          item.readyNum = item.rate.substring(0, item.rate.indexOf('/')) // 已备数量
         })
         dataMap.detailsForm = res.data.details
-        var newList: any = []  // 标签明细
+        var newList: any = [] // 标签明细
         res.data.header.pickBarcodeDetails.forEach((item: any) => {
-        newList.push({ barcode: item.pickBarcode, quantity: item.quantity, time: time })
-      })
-      dataMap.dataList = newList
+          newList.push({ barcode: item.pickBarcode, quantity: item.quantity, time: time })
+        })
+        dataMap.dataList = newList
         // getCheckcode()
       }
       // console.log(dataMap.detailsForm.length, 'details')
@@ -176,10 +157,10 @@ function getOrder() {
 function getCheckcode() {
   WMSAPI.get(APIName, { PickID: form.value.purchaseOrder }, 'pickorder/CheckBarCode').then((res) => {
     if (res.success === true) {
-      form.value.message = res.message
+      form.value.message = res.message as string
       dataMap.newBarcode = res.data.barcode
     } else {
-      form.value.message = res.message
+      form.value.message = res.message as string
     }
   })
 }
@@ -187,7 +168,7 @@ dataMap.formList[1].enter = getBarcode
 // 获取标签条码
 function getBarcode() {
   if (form.value.imBarcode) {
-    //固废标签带有#的直接截取最后一个#后面的值，否则拿原有的值
+    // 固废标签带有#的直接截取最后一个#后面的值，否则拿原有的值
     let Barcode = ''
     if (form.value.imBarcode.indexOf('#') !== -1) {
       Barcode = validateBarcode(form.value.imBarcode)
@@ -195,11 +176,14 @@ function getBarcode() {
       Barcode = form.value.imBarcode
     }
     pickBarcode(Barcode)
+    form.value.imBarcode = ''
+    let imBarcode = formComponent.value?.formInputRef.imBarcode.inputRef
+    imBarcode.focus()
   } else {
     form.value.message = '请输入标签条码'
   }
 }
-function pickBarcode(val) {
+function pickBarcode(val: any) {
   let Barcode = ''
   if (val.indexOf('#') !== -1) {
     Barcode = validateBarcode(val)
@@ -212,54 +196,66 @@ function pickBarcode(val) {
     isCheckBatch: true
   }
   WMSAPI.post(APIName, data, 'pickorder/PickBarCode').then((res) => {
-    if(res.success === true && res.result != 101) {
-      form.value.message = res.message as string
+    if (res.success && res.result !== 101) {
+      form.value.message = `【${val}】扫描 ${res.message}`
       var newList: any = []
       res.data.pickBarcodeDetails.forEach((item: any) => {
-        newList.push({ barcode: item.pickBarcode, quantity: item.quantity, time: time })
+        item.creationTime = item.creationTime.split('T')[1]
+        newList.push({ barcode: item.pickBarcode, quantity: item.quantity, time: item.creationTime })
       })
       // console.log(newList, 'newList')
       dataMap.dataList = newList
-    }
-    else if (res.success === true && res.result == 101) {
+      // form.value.imBarcode = ''
+      let imBarcode = formComponent.value?.formInputRef.imBarcode.inputRef
+      imBarcode.focus()
+    } else if (res.success && res.result === 101) {
       showConfirmDialog({
-    title: '标题',
-    message: res.message
-  })
-    .then(() => {
-     // on confirm
-     WMSAPI.post(APIName, {pickID: form.value.purchaseOrder, barcode: Barcode, isCheckBatch: false}, 'pickorder/PickBarCode').then((res) => {
-      getOrder()
-      form.value.message = res.message as string
-      //dataMap.dataList.push({ barcode: res.data.pickBarcodes, quantity: res.data.quantity as Number, time: time })
-      var newList: any = []
-      res.data.pickBarcodeDetails.forEach((item: any) => {
-        newList.push({ barcode: item.pickBarcode, quantity: item.quantity, time: time })
+        title: '标题',
+        message: res.message
       })
-      // console.log(newList, 'newList')
-      dataMap.dataList = newList
-      let arr = dataMap.dataList
-      let newArr = [] as any
-      let obj = {} as any
-      for (let i = 0; i < arr.length; i++) {
-        //将arr[i].barcode作为对象属性进行判断
-        // console.log(obj[arr[i].barcode])
-        if (!obj[arr[i].barcode]) {
-          newArr.push(arr[i])
-          obj[arr[i].barcode] = true
-        } else {
-          _showFailToast('条码不能重复扫描')
-        }
-      }
-      // console.log(newArr, 'newArr')
-      dataMap.dataList = newArr
-      form.value.imBarcode = ''
-     })
-    })
-    .catch(() => {
-      form.value.imBarcode = ''
-    })
+        .then(() => {
+          // on confirm
+          WMSAPI.post(
+            APIName,
+            { pickID: form.value.purchaseOrder, barcode: Barcode, isCheckBatch: false },
+            'pickorder/PickBarCode'
+          ).then((res) => {
+            getOrder()
+            form.value.message = res.message as string
+            // dataMap.dataList.push({ barcode: res.data.pickBarcodes, quantity: res.data.quantity as Number, time: time })
+            var newList: any = []
+            res.data.pickBarcodeDetails.forEach((item: any) => {
+              newList.push({ barcode: item.pickBarcode, quantity: item.quantity, time: time })
+            })
+            // console.log(newList, 'newList')
+            dataMap.dataList = newList
+            let arr = dataMap.dataList
+            let newArr = [] as any
+            let obj = {} as any
+            for (let i = 0; i < arr.length; i++) {
+              // 将arr[i].barcode作为对象属性进行判断
+              // console.log(obj[arr[i].barcode])
+              if (!obj[arr[i].barcode]) {
+                newArr.push(arr[i])
+                obj[arr[i].barcode] = true
+              } else {
+                _showFailToast('条码不能重复扫描')
+              }
+            }
+            // console.log(newArr, 'newArr')
+            dataMap.dataList = newArr
+            // form.value.imBarcode = ''
+            let imBarcode = formComponent.value?.formInputRef.imBarcode.inputRef
+            imBarcode.focus()
+          })
+        })
+        .catch(() => {
+          form.value.imBarcode = ''
+        })
     } else {
+      form.value.imBarcode = ''
+      let imBarcode = formComponent.value?.formInputRef.imBarcode.inputRef
+      imBarcode.focus()
       form.value.message = res.message as string
     }
   })
@@ -277,14 +273,16 @@ function removeItem(item: any) {
       // on confirm
       // 删除行
       const index = dataMap.dataList.indexOf(item)
-      WMSAPI.post(APIName, { PickID: form.value.purchaseOrder, Barcode: item.barcode }, 'pickorder/DelBarCode').then((res) => {
-        if(res.success === true){
-          dataMap.dataList.splice(index, 1)
-          showSuccessToast(res.message as string)
-        }else {
-          _showFailToast(res.message as string)
+      WMSAPI.post(APIName, { PickID: form.value.purchaseOrder, Barcode: item.barcode }, 'pickorder/DelBarCode').then(
+        (res) => {
+          if (res.success === true) {
+            dataMap.dataList.splice(index, 1)
+            showSuccessToast(res.message as string)
+          } else {
+            _showFailToast(res.message as string)
+          }
         }
-      })
+      )
     })
     .catch(() => {
       // on cancel
@@ -300,7 +298,7 @@ function handleConfirm() {
     pickID: form.value.purchaseOrder
   }
   WMSAPI.post(APIName, data, 'pda/ReadyMaterial').then((res) => {
-    if (res.success == true) {
+    if (res.success) {
       form.value = {
         date: today,
         purchaseOrder: '',
@@ -309,7 +307,7 @@ function handleConfirm() {
       }
       dataMap.detailsForm = []
       dataMap.dataList = []
-    }else{
+    } else {
       form.value.message = res.message as string
     }
     // } else {
@@ -368,6 +366,7 @@ function handleClear() {
   padding: 8px !important;
   font-size: 12px;
 }
+
 ::v-deep .van-cell__value {
   word-break: break-all;
 }

@@ -1,12 +1,29 @@
 <template>
-  <van-field v-model="fieldValue" :type="type" :name="item.label" :label="item.label" :placeholder="'请输入' + item.label"
-    :required="item.rules && item.rules.length > 0" :disabled="disabled" :rules="item.rules"
-    :show-word-limit="Boolean(inputParams?.maxlength)" :autosize="inputParams?.autosize" :rows="inputParams?.rows"
-    :input-align="inputParams?.align" :left-icon="inputParams?.leftIcon" clearable clear-trigger="always"
-    @keyup.enter="enter" @blur="blur" ref="inputRef">
+  <van-field
+    v-model="fieldValue"
+    :type="type"
+    :name="item.label"
+    :label="item.label"
+    :placeholder="item.placeholder ? item.placeholder : '请输入' + item.label"
+    :required="item.rules && item.rules.length > 0"
+    :disabled="disabled"
+    :rules="item.rules"
+    :show-word-limit="Boolean(inputParams?.maxlength)"
+    :autosize="inputParams?.autosize"
+    :rows="inputParams?.rows"
+    :input-align="inputParams?.align"
+    :left-icon="inputParams?.leftIcon"
+    clearable
+    clear-trigger="always"
+    @keyup.enter="enter"
+    @blur="blur"
+    @clear="clear"
+    ref="inputRef"
+  >
     <template #button v-if="inputParams?.btnLabel">
-      <van-button size="small" type="primary" @click="emits(inputParams?.clickFun as any)">{{ inputParams?.btnLabel
-      }}</van-button>
+      <van-button size="small" type="primary" @click="emits(inputParams?.clickFun as any)">
+        {{ inputParams?.btnLabel }}
+      </van-button>
     </template>
   </van-field>
 </template>
@@ -16,7 +33,7 @@ import { FormConfig, IInputParams } from '@/typing'
 import { FieldType, FieldInstance } from 'vant'
 import { PropType, computed, ref } from 'vue'
 
-let emits = defineEmits(['update:modelValue', 'blur', 'enter'])
+let emits = defineEmits(['update:modelValue', 'blur', 'enter', 'clear'])
 let props = defineProps({
   modelValue: { type: String, default: () => '' }, // 表单的v-model
   item: { type: Object as PropType<FormConfig>, default: () => ({}) },
@@ -57,6 +74,12 @@ function enter() {
   inputRef.value?.blur()
   emits('enter', fieldValue.value)
 }
+function clear() {
+  fieldValue.value = ''
+  props.item.clear && props.item.clear(fieldValue.value)
+  inputRef.value?.focus()
+  emits('clear')
+}
 
 defineExpose({
   /**
@@ -66,7 +89,7 @@ defineExpose({
 })
 </script>
 <style scoped>
-/deep/ .van-field__control {
-  border-right:1px solid #C4C4C4;
+:deep(.van-field__control) {
+  border-right: 1px solid #c4c4c4;
 }
 </style>

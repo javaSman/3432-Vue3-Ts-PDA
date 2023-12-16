@@ -53,9 +53,15 @@
     </van-grid> -->
     </van-sticky>
   </div>
-   <van-tabs v-model:active="active" v-if="dataMap.listData.length > 0">
+  <van-tabs v-model:active="active" v-if="dataMap.listData.length > 0">
     <van-tab title="退料明细">
-      <DetailsVue v-for="(item,index) in dataMap.listData" :key="index" v-model:formData="dataMap.listData[index]" :formList="dataMap.detailsList" :label-width="60"></DetailsVue>
+      <DetailsVue
+        v-for="(item, index) in dataMap.listData"
+        :key="index"
+        v-model:formData="dataMap.listData[index]"
+        :formList="dataMap.detailsList"
+        :label-width="60"
+      />
     </van-tab>
     <!-- <van-tab title="已扫标签">
       <TableContent :columns="dataMap.columns" :dataSource="dataMap.dataList" @enter="search">
@@ -277,13 +283,20 @@ dataMap.formList[4].enter = getLocation
 // 获取货位编码
 function getLocation() {
   if (form.value.locationId) {
-    let barcodes = dataMap.checkedData.map((item) => item.barcode)
+    let Barcode = dataMap.checkedData.map((item: any) => {
+      // 标签带有#的直接截取最后一个#后面的值，否则拿原有的值
+      if (item.barcode.indexOf('#') !== -1) {
+        Barcode = validateBarcode(item.barcode)
+      } else {
+        Barcode = item.barcode
+      }
+    })
     let data = {
       returnID: form.value.returnOrder,
       boxID: form.value.boxId,
       locationID: form.value.locationId,
       warehouseID: form.value.warehouseID,
-      barCode: barcodes
+      barCode: [Barcode]
     }
     WMSAPI.post(APIName, data, 'pda/ReturnBandingBox').then((res) => {
       if (res.success === true) {
@@ -291,7 +304,7 @@ function getLocation() {
         setTimeout(() => {
           getOrder()
         }, 2000)
-      }else {
+      } else {
         form.value.message = res.message as string
       }
     })
@@ -304,7 +317,10 @@ dataMap.formList[3].enter = getBox
 function getBox() {
   if (form.value.boxId) {
     WMSAPI.get(APIName, { boxID: form.value.boxId }, 'box/GetBoxInfo').then((res) => {
-      if (res.success == false || res.success == true) form.value.message = res.message as string
+      if (res.success) {
+        formComponent.value?.formInputRef['locationId'].inputRef?.focus()
+      }
+      form.value.message = res.message as string
     })
   } else {
     form.value.message = '请输入载具编码'
@@ -319,10 +335,11 @@ function getOrder() {
         form.value.message = '该单据已完成'
         return
       }
-      res.details.forEach(item => {
-        item.quantity = item.quantity+ "  "+item.unitID
+      res.details.forEach((item: any) => {
+        item.quantity = item.quantity + '  ' + item.unitID
       })
       dataMap.listData = res.details
+      formComponent.value?.formInputRef['imBarcode'].inputRef?.focus()
     } else {
       form.value.message = '该单据不存在'
     }
@@ -335,15 +352,19 @@ function getbarcode() {
     form.value.message = '请先扫描退料单号！'
   } else {
     let barcode = form.value.imBarcode
-    if (dataMap.checkedData.findIndex((item) => item.barcode === barcode) < 0) {
+    if (dataMap.checkedData.findIndex((item: any) => item.barcode === barcode) < 0) {
       //  console.log('1111')
       dataMap.checkedData.unshift({ barcode })
-      form.value.message = '扫描成功'
+      // 标签带有#的直接截取最后一个#后面的值，否则拿原有的值
+      let Barcode = ''
+      if (form.value.imBarcode.indexOf('#') !== -1) {
+        Barcode = validateBarcode(form.value.imBarcode)
+      } else {
+        Barcode = form.value.imBarcode
+      }
+      form.value.message = `扫描成功:${Barcode}`
       //  form.value.imBarcode = ''
-      setTimeout(() => {
-        boxInputRef?.focus()
-        form.value.imBarcode = ''
-      }, 0)
+      formComponent.value?.formInputRef['boxId'].inputRef?.focus()
     } else {
       _showFailToast('请勿扫描重复的条码！')
     }
@@ -392,7 +413,7 @@ function handleClear() {
 // 确定
 function handleConfirm() {
   WMSAPI.post(APIName, { returnID: form.value.returnOrder }, 'pda/ReturnInStock').then((res) => {
-    if (res.success == true) {
+    if (res.success) {
       dataMap.loading = false
       form.value = {
         date: today,
@@ -421,8 +442,8 @@ function initConfig() {
 }
 // 搜索
 function search(value: string) {
-  //console.log(value, '1345')
-  let data = dataMap.dataList.filter((item: any) => item.barcode == value)
+  // console.log(value, '1345')
+  let data = dataMap.dataList.filter((item: any) => item.barcode === value)
   dataMap.dataList = data
 }
 </script>

@@ -26,8 +26,8 @@ export const formList: Array<FormConfig> = [
     type: 'Select',
     label: '仓库',
     prop: 'warehouseID',
-    options:[],
-    optionsTwo:[],
+    options: [],
+    optionsTwo: []
     // rules: [{ required: true, message: '请选择仓库', trigger: 'onBlur' }]
   },
   {
@@ -38,20 +38,20 @@ export const formList: Array<FormConfig> = [
   },
   {
     type: 'Input',
-    label: '物料标签',
-    prop: 'imBarcode',
+    label: '标签条码',
+    prop: 'imBarcode'
     // rules: [{ required: true, message: '请输入标签条码', trigger: 'onBlur' }]
   },
   {
     type: 'Input',
     label: '载具编码',
-    prop: 'boxId',
+    prop: 'boxId'
     // rules: [{ required: true, message: '请输入载具编码', trigger: 'onBlur' }]
   },
   {
     type: 'Input',
     label: '货位编码',
-    prop: 'locationId',
+    prop: 'locationId'
     // rules: [{ required: true, message: '请输入货位编码', trigger: 'onBlur' }]
   },
   {

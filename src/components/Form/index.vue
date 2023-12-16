@@ -1,34 +1,70 @@
 <template>
   <van-form ref="refForm" :label-width="labelWidth">
     <van-cell-group :inset="inset">
-      <div v-for="item in formListFiter" :key="item.prop">
-        <InputVue
-          :ref="(el: any) => formInputRef[item.prop] = el"
-          v-if="item.type === 'Input' || item.type === 'Textarea'"
-          v-model="form[item.prop]"
-          :item="item"
-          :isEdit="isEdit"
-        />
-        <NumberVue v-if="item.type === 'Number'" v-model="form[item.prop]" :item="item" :isEdit="isEdit" />
-        <SelectVue v-if="item.type === 'Select'" v-model="form[item.prop]" :item="item" :isEdit="isEdit" />
-        <CalendarVue v-if="item.type === 'Calendar'" v-model="form[item.prop]" :item="item" :isEdit="isEdit" />
-        <CalendarRangeVue v-if="item.type === 'CalendarRange'" v-model="form[item.prop]" :item="item" :isEdit="isEdit" />
-        <DropdownVue v-if="item.type === 'Dropdown'" v-model="form[item.prop]" :item="item" :isEdit="isEdit" @change="(val)=>dropdownChange(val,item.prop)"/>
-        <van-field v-if="item.type === 'Text'" :name="item.prop" :label="item.label">
-          <template #input>
+      <van-row>
+        <van-col v-for="item in formListFiter" :key="item.prop" :span="item.span ? item.span : 24">
+          <InputVue
+            :ref="(el: any) => formInputRef[item.prop] = el"
+            v-if="item.type === 'Input' || item.type === 'Textarea'"
+            v-model="form[item.prop]"
+            :item="item"
+            :isEdit="isEdit"
+          />
+          <NumberVue v-if="item.type === 'Number'" v-model="form[item.prop]" :item="item" :isEdit="isEdit" />
+          <SelectVue v-if="item.type === 'Select'" v-model="form[item.prop]" :item="item" :isEdit="isEdit" />
+          <CalendarVue v-if="item.type === 'Calendar'" v-model="form[item.prop]" :item="item" :isEdit="isEdit" />
+          <CalendarRangeVue
+            v-if="item.type === 'CalendarRange'"
+            v-model="form[item.prop]"
+            :item="item"
+            :isEdit="isEdit"
+          />
+          <DropdownVue
+            v-if="item.type === 'Dropdown'"
+            v-model="form[item.prop]"
+            :item="item"
+            :isEdit="isEdit"
+            @change="(val) => dropdownChange(val, item.prop)"
+          />
+          <van-field v-if="item.type === 'Text'" :name="item.prop" :label="item.label">
+            <template #input>
+              {{ form[item.prop] }}
+            </template>
+          </van-field>
+          <van-field v-if="item.type === 'Message'" :name="item.prop" :label="item.label">
+            <template #input>
+              <span
+                style="
+                  display: inline-block;
+                  width: 228px;
+                  white-space: nowrap;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  font-weight: bold;
+                "
+              >
+                {{ form[item.prop] }}
+              </span>
+              <van-icon class="icon" :name="show ? 'arrow-down' : 'arrow'" @click="show = !show" />
+            </template>
+          </van-field>
+          <div
+            v-if="item.type === 'Message'"
+            v-show="show"
+            style="
+              width: 95%;
+              height: auto;
+              text-align: left;
+              padding: 5px;
+              font-weight: bold;
+              word-break: break-all;
+              line-break: anywhere;
+            "
+          >
             {{ form[item.prop] }}
-          </template>
-        </van-field>
-        <van-field v-if="item.type === 'Message'" :name="item.prop" :label="item.label">
-          <template #input>
-            <span style="display:inline-block;width:228px; white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">{{ form[item.prop] }}</span>
-            <van-icon class="icon" :name="show ? 'arrow-down' : 'arrow'" @click="show = !show" />
-          </template>
-        </van-field>
-        <div  v-if="item.type === 'Message'"  v-show="show" style="width:95%;height:auto;text-align:left;padding:5px;">
-          {{ form[item.prop] }}
-       </div>
-      </div>
+          </div>
+        </van-col>
+      </van-row>
     </van-cell-group>
   </van-form>
 </template>
@@ -75,7 +111,7 @@ let formListFiter = computed<FormConfig[]>(() => {
 let formInputRef = ref<any>({})
 
 /** dropdown选择回调，有些特殊业务需要用到 */
-const dropdownChange = (val:string, prop:string) => {
+const dropdownChange = (val: string, prop: string) => {
   emits('onDropdown', val, prop)
 }
 defineExpose({

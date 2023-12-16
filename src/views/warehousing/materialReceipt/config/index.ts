@@ -5,13 +5,13 @@ export const detailsList: Array<FormConfigText> = [
   {
     type: 'Text',
     label: '行号',
-    span: 12,
+    span: 8,
     prop: 'poItemNo'
   },
   {
     type: 'Text',
     label: '物料编码',
-    span: 12,
+    span: 16,
     prop: 'materialID'
   },
   {
@@ -72,7 +72,7 @@ export const detailsList: Array<FormConfigText> = [
     span: 24,
     prop: 'multiLine'
     // supplierConfig: []
-  },
+  }
 ]
 export const formList: Array<FormConfig> = [
   // {
@@ -104,7 +104,8 @@ export const formList: Array<FormConfig> = [
   {
     type: 'Input',
     label: '物料编码',
-    prop: 'materialID'
+    prop: 'materialID',
+    placeholder: '如果要过滤物料，请输入编码'
   },
   {
     type: 'Calendar',

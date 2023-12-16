@@ -57,14 +57,14 @@ export const detailsList: Array<FormConfigText> = [
     label: '本次已扫',
     span: 24,
     prop: 'num'
-  },
+  }
 ]
 export const formList: Array<FormConfig> = [
-  { type: 'Dropdown', label: '单据号', prop: 'orderId', options: []},
+  { type: 'Dropdown', label: '单据号', prop: 'orderId', options: [] },
   {
     type: 'Input',
     label: '标签条码',
-    prop: 'imBarcode',
+    prop: 'imBarcode'
     // rules: [{ required: true, message: '请输入标签条码', trigger: 'onBlur' }]
   },
   // {
@@ -83,16 +83,17 @@ export const formList: Array<FormConfig> = [
   // },
   {
     type: 'Input',
-    label: '货位编码',
-    prop: 'locationId',
-    rules: [{ required: true, message: '请输入货位编码', trigger: 'onBlur' }]
-  },
-  {
-    type: 'Input',
     label: '载具编码',
     prop: 'boxId',
     rules: [{ required: true, message: '请输入载具编码', trigger: 'onBlur' }]
   },
+  {
+    type: 'Input',
+    label: '货位编码',
+    prop: 'locationId',
+    rules: [{ required: true, message: '请输入货位编码', trigger: 'onBlur' }]
+  },
+
   {
     type: 'Calendar',
     label: '过账日期',

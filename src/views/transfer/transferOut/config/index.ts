@@ -5,13 +5,13 @@ export const detailsList: Array<FormConfigText> = [
   {
     type: 'Text',
     label: '物料编码',
-    span: 11,
+    span: 24,
     prop: 'materialID'
   },
   {
     type: 'Text',
     label: '物料描述',
-    span: 11,
+    span: 22,
     prop: 'materialDesc'
   }
 ]
@@ -24,9 +24,9 @@ export const formList: Array<FormConfig> = [
   // },
   {
     type: 'Input',
-    label: '转库单',
+    label: '调拨单',
     prop: 'purchaseOrder',
-    rules: [{ required: true, message: '请输入采购订单', trigger: 'onBlur' }]
+    rules: [{ required: true, message: '请输入调拨单', trigger: 'onBlur' }]
   },
   // {
   //   type: 'Input',
@@ -48,11 +48,11 @@ export const formList: Array<FormConfig> = [
 ]
 export const showFormList: Array<FormConfigText> = [
   { label: '批次号', prop: 'batch', type: 'Text', span: 24 },
-  { label: '转库单行号', prop: 'allocationNo', type: 'Text',span: 24 },
-  { label: '转库单数量', prop: 'quantity', type: 'Text',span: 24 },
-  { label: '供应商代码', prop: 'supplierCode', type: 'Text',span: 24 },
-  { label: '已转数量', prop: 'pickQuantity', type: 'Text',span: 24 },
-  { label: '已转标签集', prop: 'pickBarcodes', type: 'Text',span: 24 }
+  { label: '调拨单行号', prop: 'allocationNo', type: 'Text', span: 24 },
+  { label: '调拨单数量', prop: 'quantity', type: 'Text', span: 24 },
+  { label: '供应商代码', prop: 'supplierCode', type: 'Text', span: 24 },
+  { label: '已转数量', prop: 'pickQuantity', type: 'Text', span: 24 },
+  { label: '已转标签集', prop: 'pickBarcodes', type: 'Text', span: 24 }
 ]
 export const tableColumn: TableColumn[] = [
   { label: '订单行', prop: 'ebelp', formatter: formatEbeln, type: 'Table/CheckBox' },

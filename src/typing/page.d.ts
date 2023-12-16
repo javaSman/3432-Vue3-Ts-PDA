@@ -1,6 +1,7 @@
 import { FieldRule, FieldTextAlign } from 'vant'
 
 export interface FormConfig {
+  span?: any
   label: string
   prop: string
   type: string
@@ -13,6 +14,7 @@ export interface FormConfig {
   blur?: (val: any) => void
   enter?: (val: any) => void
   change?: (val: any) => void
+  clear?: (val: any) => void
   /** 自定义插槽名称，type = 'CustomSlotForm' 时用 */
   slot?: string
 
@@ -25,6 +27,7 @@ export interface FormConfig {
   inputParams?: IInputParams
   numberParams?: INumberParams
   calendarParams?: ICalendarParams
+  placeholder?: string
 }
 export interface FormConfigText {
   label: string
@@ -54,7 +57,7 @@ export interface FormConfigText {
   numberParams?: INumberParams
   calendarParams?: ICalendarParams
 }
-export interface IInputParams{
+export interface IInputParams {
   maxlength?: number
   leftIcon?: string
   rightIcon?: string
@@ -64,16 +67,16 @@ export interface IInputParams{
   autosize?: boolean // 高度自适应，type 为 Textarea 时有效
   rows?: number // type 为 Textarea 时有效
 }
-export interface INumberParams{
+export interface INumberParams {
   max?: number
   min?: number
   precision?: number
   step?: number
 }
-export interface ISelectParams{
+export interface ISelectParams {
   loading?: boolean
 }
-export interface ICalendarParams{
+export interface ICalendarParams {
   minDate?: Date
   maxDate?: Date
   // 以下，适合日期范围
@@ -92,25 +95,25 @@ export interface IDictObj {
   suffix?: string
 }
 
-export interface TableColumn{
+export interface TableColumn {
   label: string
   prop: string
   type?: string
   formatter?: (data: any, val: any) => any
   tableBtnParams?: ITableBtnParams // type 类型为 Table/RightBtn 的时候使用
-  multiple?:number // type类型是Number时使用，多少倍的意思
+  multiple?: number // type类型是Number时使用，多少倍的意思
   slot?: string // 自定义插槽名称，type = 'CustomSlot' 时用
-  rules?: FieldRule[],
+  rules?: FieldRule[]
   tableNumberParams?: ITableNumberParams
 }
-export interface ITableBtnParams{
+export interface ITableBtnParams {
   // clickFun: string
   loading: boolean[]
   btnText?: string
   icon?: string // 图标名称
 }
 /** Table数字输入框 */
-export interface ITableNumberParams{
+export interface ITableNumberParams {
   /**
    *  单位字段
    */

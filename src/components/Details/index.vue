@@ -111,7 +111,7 @@ function supplierList() {
 }
 </script>
 <style scoped>
-/deep/ .van-col {
+::deep .van-col {
   border-bottom: 1px solid rgb(238, 238, 238);
 }
 /* /deep/ .van-cell {

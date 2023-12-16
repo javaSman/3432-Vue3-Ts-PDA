@@ -50,16 +50,22 @@ export const detailsList: Array<FormConfigText> = [
     label: '本次已扫',
     span: 24,
     prop: 'num'
-  },
+  }
 ]
 export const formList: Array<FormConfig> = [
   {
     type: 'Select',
     label: '仓库',
     prop: 'warehouseID',
-    options:[],
-    optionsTwo:[],
+    options: [],
+    optionsTwo: [],
     rules: [{ required: true, message: '请选择仓库', trigger: 'onBlur' }]
+  },
+  {
+    type: 'Input',
+    label: '载具编码',
+    prop: 'boxId',
+    rules: [{ required: true, message: '请输入载具编码', trigger: 'onBlur' }]
   },
   {
     type: 'Input',
@@ -73,12 +79,7 @@ export const formList: Array<FormConfig> = [
   //   prop: 'imBarcode'
   //   // rules: [{ required: true, message: '请输入条码', trigger: 'onBlur' }]
   // },
-  {
-    type: 'Input',
-    label: '载具编码',
-    prop: 'boxId',
-    rules: [{ required: true, message: '请输入载具编码', trigger: 'onBlur' }]
-  },
+
   {
     type: 'Input',
     label: '标签条码',

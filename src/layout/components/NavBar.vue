@@ -4,12 +4,12 @@
       <div class="box-container">
         <div class="left-container" @click="clickLeft">
           <van-icon v-if="leftArrow" name="arrow-left" class="left-icon" />
-          <span>{{ title }}&nbsp;&nbsp;</span>
+          <span>{{ title }}&nbsp;&nbsp;&nbsp;&nbsp;</span>
           <!-- <span v-if="el.$route.name == 'Dashboard'">{{versionText}}</span> -->
-          <span>{{versionText}}</span>
+          <span>{{ versionText }}</span>
         </div>
         <div class="right-container" @click="handleLogout">
-          <span>{{ '【' + currentUser.account + '】' + currentUser.name }}</span>
+          <span>{{ currentUser.name }}</span>
         </div>
       </div>
     </template>
@@ -17,9 +17,8 @@
 </template>
 
 <script lang="ts" setup name="NavBarVue">
-import { ref, ComponentInternalInstance, getCurrentInstance, onMounted } from 'vue'
+import { ComponentInternalInstance, getCurrentInstance } from 'vue'
 import { showConfirmDialog } from 'vant'
-import { WMSAPI } from '@/api/generalAPI'
 import useStore from '@/store'
 import { removeToken } from '@/utils/auth'
 let { user } = useStore()

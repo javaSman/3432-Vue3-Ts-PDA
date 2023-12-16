@@ -6,10 +6,10 @@
       <van-icon class="icon" name="minus" @click.prevent="removeSupplierConfig(item)" />
     </van-col>
     <van-col span="14">
-      <van-field v-model="item.supplierBatch" label="供应商批次" label-width="60" placeholder="请输入" clearable />
+      <van-field v-model="item.supplierBatch" label="供应商批次" label-width="60" placeholder="请输入" />
     </van-col>
     <van-col span="8">
-      <van-field v-model="item.receivingNum" label="实收" label-width="30" placeholder="请输入" clearable />
+      <van-field v-model="item.receivingNum" label="实收" label-width="30" placeholder="请输入" />
     </van-col>
     <van-col span="1">
       <!-- <van-icon class="icon" name="plus" @click="addSupplierConfig" /> -->
@@ -19,7 +19,7 @@
     <!-- <van-col span="8">span: 8</van-col> -->
   </van-row>
   <div v-show="show">
-    <van-row v-for="(item, index3) in supplierConfig.slice(2)" :key="index2">
+    <van-row v-for="(item, index3) in supplierConfig.slice(2)" :key="index3">
       <van-col span="1">
         <van-icon class="icon" name="minus" @click.prevent="removeSupplierConfig(item)" />
       </van-col>

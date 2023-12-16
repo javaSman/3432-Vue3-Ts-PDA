@@ -41,10 +41,13 @@ import ActionBarVue from '@/views/businessComponents/ActionBar.vue'
 import { WMSAPI } from '@/api/generalAPI'
 import { ref, reactive, onMounted } from 'vue'
 import { formList, detailsList } from './config'
-import { showSuccessToast, showConfirmDialog } from 'vant'
-import { _showFailToast } from '@/utils/message'
+import { showConfirmDialog } from 'vant'
+import { validateBarcode } from '@/utils/validate'
+import Dates from '@/utils/datetime'
 let formComponent = ref<InstanceType<typeof FormVue> | null>(null)
 let barcodeInputRef: FieldInstance | null = null
+const time = new Dates(new Date()).strftime('H:m:s')
+
 const APIName = 'business'
 const columns = [
   {
@@ -114,7 +117,7 @@ onMounted(() => {
 function removeItem(item: any) {
   showConfirmDialog({
     title: '标题',
-    message: '确定要删除吗？'
+    message: `确定要删除【${item.barcode}】吗？`
   }).then(() => {
     const index = dataMap.dataList.indexOf(item)
     if (index !== -1) {
@@ -125,13 +128,20 @@ function removeItem(item: any) {
 dataMap.formList[0].enter = getDetails
 function getDetails() {
   if (form.value.barcode) {
-    WMSAPI.get(APIName, { barcode: form.value.barcode }, 'materialsbarcode/GetBarcode').then((res) => {
-      if (res.success === true) {
+    // 带有#的直接截取最后一个#后面的值，否则拿原有的值
+    let Barcode = ''
+    if (form.value.barcode.indexOf('#') !== -1) {
+      Barcode = validateBarcode(form.value.barcode)
+    } else {
+      Barcode = form.value.barcode
+    }
+    WMSAPI.get(APIName, { barcode: Barcode }, 'materialsbarcode/GetBarcode').then((res) => {
+      if (res.success) {
         barcodeInputRef?.focus()
         form.value.barcode = ''
         dataMap.detailsForm = res.data
-        form.value.message = res.message as string
-        dataMap.dataList.push({ barcode: res.data.barcode, quantity: res.data.quantity })
+        form.value.message = `【${Barcode}】扫描成功`
+        dataMap.dataList.push({ barcode: res.data.barcode, quantity: res.data.quantity, lowestPrice: time })
         let arr = dataMap.dataList
         let newArr = [] as any
         let obj = {} as any
@@ -155,7 +165,7 @@ function getDetails() {
 }
 // 搜索
 function search(value: string) {
-  let data = dataMap.dataList.filter((item: any) => item.barcode == value)
+  let data = dataMap.dataList.filter((item: any) => item.barcode === value)
   dataMap.dataList = data
 }
 // 清除

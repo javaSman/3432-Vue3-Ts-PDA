@@ -17,19 +17,17 @@
         </van-cell>
 
         <van-cell class="cellRight" title="信息设置" value="" is-link to="updateInfo" />
-        <van-cell class="cellRight" title="安全设置" value="" is-link to="updatePass" />
+        <!-- <van-cell class="cellRight" title="安全设置" value="" is-link to="updatePass" /> -->
         <!-- <van-cell title="当前环境">
           <div class="user-right">{{ user.email }}</div>
         </van-cell> -->
-        <van-cell class="cellRight" title="当前版本" is-link @click="handleUpgrade">
-          <!-- <template #title>
-            <span class="custom-title">当前版本</span>
-          </template>-->
+        <!-- <van-cell class="cellRight" title="当前版本" is-link @click="handleUpgrade">
+
           <div class="user-right">
             {{ dataMap.env }} {{ dataMap.currentVersion }}
             <van-tag v-show="dataMap.hasUpdate" type="danger">new</van-tag>
           </div>
-        </van-cell>
+        </van-cell> -->
       </van-cell-group>
     </div>
     <van-button native-type="button" type="primary" style="width: 95%; margin: 30px 0" @click="handleLogout">

@@ -5,13 +5,13 @@ export const detailsList: Array<FormConfigText> = [
   {
     type: 'Text',
     label: '行号',
-    span: 12,
+    span: 9,
     prop: 'pickItemNo'
   },
   {
     type: 'Text',
     label: '物料编码',
-    span: 12,
+    span: 15,
     prop: 'materialID'
   },
   {
@@ -38,7 +38,7 @@ export const detailsList: Array<FormConfigText> = [
     label: '已备数量',
     span: 12,
     prop: 'readyNum'
-  },
+  }
   // {
   //   type: 'Text',
   //   label: '已收数量',
@@ -74,7 +74,7 @@ export const formList: Array<FormConfig> = [
   {
     type: 'Input',
     label: '标签条码',
-    prop: 'imBarcode',
+    prop: 'imBarcode'
     // rules: [{ required: true, message: '请输入标签条码', trigger: 'onBlur' }]
   },
   {

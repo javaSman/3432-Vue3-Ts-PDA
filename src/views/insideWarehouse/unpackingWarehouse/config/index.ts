@@ -1,4 +1,4 @@
-import { FormConfig, FormConfigText, TableColumn } from '@/typing'
+import { FormConfigText, TableColumn } from '@/typing'
 import { formatCharg, formatLgort, formatErfmgMultiple, formatEbeln } from '@/views/dict'
 
 export const detailsList: Array<FormConfigText> = [
@@ -83,6 +83,12 @@ export const formList: Array<FormConfigText> = [
     label: '标签个数',
     span: 24,
     prop: 'share'
+  },
+  {
+    type: 'Message',
+    label: '消息',
+    span: 24,
+    prop: 'message'
   }
 ]
 // export const showFormList: Array<FormConfig> = [
