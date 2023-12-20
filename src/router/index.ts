@@ -26,30 +26,18 @@ router.beforeEach((to, from, next) => {
       next({ path: '/' })
       NProgress.done()
     } else {
-      if (user.roles.length === 0) {
+      if (Object.keys(user.interfaceMenu).length === 0) {
         // 判断当前用户是否已拉取完user_info信息
-        let flag = user.GetInfo()
-        if (flag) {
-          // 动态路由，拉取菜单
-          loadMenus(next, to)
-        } else {
-          user.LogOut().then(() => {
-            logOut()
+        user
+          .getAuthInfo()
+          .then(() => {
+            loadMenus(next, to)
           })
-        }
-        // user
-        //   .GetInfo()
-        //   .then(() => {
-        //     // 拉取user_info
-        //     // 动态路由，拉取菜单
-        //     loadMenus(next, to)
-        //   })
-        //   .catch(() => {
-        //     user.LogOut().then(() => {
-        //       // location.reload() // 为了重新实例化vue-router对象 避免bug
-        //       logOut()
-        //     })
-        //   })
+          .catch(() => {
+            user.LogOut().then(() => {
+              logOut()
+            })
+          })
       } else if (user.loadMenus) {
         // 登录时未拉取菜单，在此处拉取
         // 修改成false，防止死循环

@@ -17,7 +17,7 @@ export const useUserStore = defineStore({
     // 第一次加载菜单时用到
     loadMenus: false,
     menus: [],
-    interfaceMenu: [], // 菜单权限
+    interfaceMenu: {}, // 菜单权限
     noAuth: false, // 判断当前是否有菜单权限，true 为没有
     // 快捷菜单
     homeMenus: [],
@@ -44,17 +44,10 @@ export const useUserStore = defineStore({
               return
             }
             this.getAuthInfo()
-
-            // commit('SET_USER_INFO', permission)
             this.getVersion()
             this.getUserInfo()
-            // TODO: 由于个人信息是从登录返回而不是另开接口，一刷新该数据就没有了，所以该数据需要缓存到本地
-            // localStorage.setItem('userInfo', JSON.stringify(_res))
-            // 若rememberMe为true，token添加过期时间
+            getAuthInfo()
             setToken(res.access_token, false)
-            // TODO: 获取企业云keyId，目前没有权限，先写死用户工号
-            this.GetKeyIdQYY('13383')
-            // setkeyId(res.access_token)
             this.token = res.access_token
             // 第一次加载菜单时用到， 具体见 src 目录下的 permission.js
             this.loadMenus = true
@@ -64,18 +57,6 @@ export const useUserStore = defineStore({
             reject(error)
           })
       })
-    },
-    // 根据当前登录用户工号，获取企业云接口的keyId
-    GetKeyIdQYY(account: string) {
-      getKeyIdQYY(account)
-        .then((res) => {
-          // console.log(res)
-          this.keyId = res.data.keyId
-          setKeyId(res.data.keyId)
-        })
-        .catch((e) => {
-          console.log(e)
-        })
     },
     // 获取用户
     // 获取用户信息
@@ -88,11 +69,17 @@ export const useUserStore = defineStore({
     },
     // 获取用户权限
     getAuthInfo() {
-      getAuthInfo().then((res) => {
-        sessionStorage.setItem('interfaceMenu', JSON.stringify(res.auth.grantedPolicies))
+      return new Promise((resolve, reject) => {
+        getAuthInfo()
+          .then((res) => {
+            this.interfaceMenu = res.auth.grantedPolicies
+            resolve(res.auth.grantedPolicies)
+          })
+          .catch((error) => {
+            reject(error)
+          })
       })
     },
-
     getVersion() {
       WMSAPI.get('business', {}, 'AppVersion/all').then((res) => {
         let version = res.items as any[]
@@ -107,41 +94,6 @@ export const useUserStore = defineStore({
           localStorage.setItem('version', version[0].version + '              ' + '(' + env + ')')
         }
       })
-    },
-    GetInfo() {
-      // 刷新页面再次加载菜单前需要获取当前用户信息
-      let userInfo = localStorage.getItem('userInfo')
-      if (userInfo === null) {
-        this.token = ''
-        removeToken()
-        this.keyId = ''
-        removeKeyId()
-        return false
-      } else {
-        let _info = JSON.parse(userInfo)
-        this.token = getToken()
-        this.menus = asyncRoutes
-        this.getAuthInfo()
-        // 重新加载用户信息
-        setUserInfo(_info)
-        return true
-      }
-      // return new Promise((resolve, reject) => {
-      //   getInfo()
-      //     .then((res) => {
-      //       // 第一次加载菜单时用到， 具体见 src 目录下的 permission.js;第一次加载不做缓存
-      //       this.menus = res.data
-      //       resolve(res)
-      //     })
-      //     .catch((error) => {
-      //       // 如果是返回 null 表示没有任何菜单权限
-      //       if (error === null) {
-      //         this.noAuth = true
-      //         resolve(null)
-      //       }
-      //       reject(error)
-      //     })
-      // })
     },
     // 登出
     LogOut() {

@@ -47,7 +47,7 @@
 import SvgIcon from '@/components/SvgIcon/index.vue'
 import { computed, getCurrentInstance, ComponentInternalInstance, ref } from 'vue'
 import useStore from '@/store'
-const { permission } = useStore()
+const { permission, user } = useStore()
 const active = ref(0)
 const iconHome = {
   active: require('../../../assets/images/homeActive.png'),
@@ -61,8 +61,7 @@ let _this = getCurrentInstance() as ComponentInternalInstance
 let el = _this.appContext.config.globalProperties
 
 const sidebarRouters = computed<any[]>(() => {
-  const interfaceMenuO: any = sessionStorage.getItem('interfaceMenu')
-  const interfaceMenu = JSON.parse(interfaceMenuO)
+  let interfaceMenu = user.interfaceMenu
   const sidebarRoutersa = JSON.parse(JSON.stringify(permission.sidebarRouters))
   let list: any[] = []
   const judgeAuthMethods = (data: any) => {
@@ -77,7 +76,6 @@ const sidebarRouters = computed<any[]>(() => {
   sidebarRoutersa.forEach((item: any) => {
     if (item.alwaysShow) list.push(item)
   })
-
   return list
 })
 

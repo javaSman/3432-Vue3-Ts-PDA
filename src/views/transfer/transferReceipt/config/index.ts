@@ -31,20 +31,20 @@ export const formList: Array<FormConfig> = [
   {
     type: 'Input',
     label: '转入载具',
-    prop: 'boxId',
-    rules: [{ required: true, message: '请输入转入载具', trigger: 'onBlur' }]
+    prop: 'boxId'
+    // rules: [{ required: true, message: '请输入转入载具', trigger: 'onBlur' }]
   },
   {
     type: 'Input',
     label: '转入货位',
-    prop: 'locationId',
-    rules: [{ required: true, message: '请输入转入货位', trigger: 'onBlur' }]
+    prop: 'locationId'
+    // rules: [{ required: true, message: '请输入转入货位', trigger: 'onBlur' }]
   },
   {
     type: 'Input',
     label: '标签条码',
-    prop: 'imBarcode',
-    rules: [{ required: true, message: '请输入条码', trigger: 'onBlur' }]
+    prop: 'imBarcode'
+    // rules: [{ required: true, message: '请输入条码', trigger: 'onBlur' }]
   },
   {
     type: 'Message',

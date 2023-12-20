@@ -78,7 +78,7 @@ let props = defineProps({
   labelWidth: { type: Number, default: 80 }, // label 的宽度
   inset: { type: Boolean, default: false },
   formData: { type: Object as PropType<any>, default: () => ({}) }, // 要清空的表单对象
-  formList: { type: Array as PropType<FormConfig[]>, default: () => [] }, // 表单字段参数
+  formList: { type: Array as PropType<FormConfigText[]>, default: () => [] }, // 表单字段参数
   isEdit: { type: Boolean, default: true },
   submit: {
     type: Function,

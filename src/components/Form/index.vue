@@ -31,7 +31,7 @@
               {{ form[item.prop] }}
             </template>
           </van-field>
-          <van-field v-if="item.type === 'Message'" :name="item.prop" :label="item.label">
+          <van-field v-if="item.type === 'Message'" :name="item.prop" :label="item.label" style="font-weight: bolder">
             <template #input>
               <span
                 style="

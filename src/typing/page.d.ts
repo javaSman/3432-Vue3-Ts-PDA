@@ -1,7 +1,6 @@
 import { FieldRule, FieldTextAlign } from 'vant'
 
 export interface FormConfig {
-  span?: any
   label: string
   prop: string
   type: string

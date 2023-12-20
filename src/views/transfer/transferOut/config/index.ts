@@ -37,8 +37,8 @@ export const formList: Array<FormConfig> = [
   {
     type: 'Input',
     label: '标签条码',
-    prop: 'imBarcode',
-    rules: [{ required: true, message: '请输入条码', trigger: 'onBlur' }]
+    prop: 'imBarcode'
+    // rules: [{ required: true, message: '请输入条码', trigger: 'onBlur' }]
   },
   {
     type: 'Message',

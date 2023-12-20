@@ -84,36 +84,7 @@ let dataMap = reactive({
     transferNum2: 0,
     transferNum3: 0,
     transferNum4: 0,
-    tableData: [
-      {
-        form: {
-          date: '20160502',
-          name: '王小虎'
-        },
-        showForm: { delivnum: 111, sgtxt4: '调拨单1', lifnr: '1', ebeln: 'edfg' }
-      },
-      {
-        form: {
-          date: '20160502',
-          name: '李小虎'
-        },
-        showForm: { delivnum: 222, sgtxt4: '调拨单2', lifnr: '2', ebeln: 'abcd' }
-      },
-      {
-        form: {
-          date: '20160502',
-          name: '王小虎'
-        },
-        showForm: { delivnum: 333, sgtxt4: '调拨单3', lifnr: '3', ebeln: 'dfhhj' }
-      },
-      {
-        form: {
-          date: '20160502',
-          name: '李小虎'
-        },
-        showForm: { delivnum: 444, sgtxt4: '调拨单4', lifnr: '4', ebeln: 'ylg,f' }
-      }
-    ]
+    tableData: []
   },
   show: false,
   loading: false,
@@ -161,7 +132,7 @@ dataMap.formList[0].enter = getDetails
 function getDetails() {
   if (form.value.purchaseOrder) {
     WMSAPI.get(APIName, { OrderId: form.value.purchaseOrder }, 'allocationorder/GetDetails').then((res) => {
-      // form.value.message = res.message as string
+      form.value.message = `【${form.value.purchaseOrder}】扫描成功`
       header.value.inWarehouseCode = res.header.inWarehouseCode as string
       header.value.outWarehouseCode = res.header.outWarehouseCode as string
       dataMap.details = res.details
@@ -196,9 +167,11 @@ function getBarcodes() {
         form.value.message = res.message as string
       }
       form.value.imBarcode = ''
+      formComponent.value?.formInputRef['imBarcode'].inputRef?.focus()
     })
   } else {
     form.value.message = '请输入标签条码'
+    formComponent.value?.formInputRef['imBarcode'].inputRef?.focus()
   }
 }
 onMounted(() => {

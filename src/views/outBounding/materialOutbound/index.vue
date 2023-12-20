@@ -146,7 +146,10 @@ function getOrder() {
           newList.push({ barcode: item.pickBarcode, quantity: item.quantity, time: time })
         })
         dataMap.dataList = newList
+        form.value.message = `【${form.value.purchaseOrder}】扫描成功`
         // getCheckcode()
+      } else {
+        form.value.message = res.message as string
       }
       // console.log(dataMap.detailsForm.length, 'details')
     })
@@ -197,7 +200,7 @@ function pickBarcode(val: any) {
   }
   WMSAPI.post(APIName, data, 'pickorder/PickBarCode').then((res) => {
     if (res.success && res.result !== 101) {
-      form.value.message = `【${val}】扫描 ${res.message}`
+      form.value.message = `【${val}】扫描${res.message}`
       var newList: any = []
       res.data.pickBarcodeDetails.forEach((item: any) => {
         item.creationTime = item.creationTime.split('T')[1]
@@ -221,7 +224,7 @@ function pickBarcode(val: any) {
             'pickorder/PickBarCode'
           ).then((res) => {
             getOrder()
-            form.value.message = res.message as string
+            form.value.message = `【${val}】扫描 ${res.message}`
             // dataMap.dataList.push({ barcode: res.data.pickBarcodes, quantity: res.data.quantity as Number, time: time })
             var newList: any = []
             res.data.pickBarcodeDetails.forEach((item: any) => {
@@ -244,7 +247,7 @@ function pickBarcode(val: any) {
             }
             // console.log(newArr, 'newArr')
             dataMap.dataList = newArr
-            // form.value.imBarcode = ''
+            form.value.imBarcode = ''
             let imBarcode = formComponent.value?.formInputRef.imBarcode.inputRef
             imBarcode.focus()
           })

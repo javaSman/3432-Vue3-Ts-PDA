@@ -4,7 +4,7 @@
       <div class="box-container">
         <div class="left-container" @click="clickLeft">
           <van-icon v-if="leftArrow" name="arrow-left" class="left-icon" />
-          <span>{{ title }}&nbsp;&nbsp;&nbsp;&nbsp;</span>
+          <span>{{ title }}&nbsp;&nbsp;</span>
           <!-- <span v-if="el.$route.name == 'Dashboard'">{{versionText}}</span> -->
           <span>{{ versionText }}</span>
         </div>

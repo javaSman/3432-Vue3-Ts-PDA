@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
+import { createRouter, RouteRecordRaw, createWebHistory } from 'vue-router'
 export const Layout = () => import('@/layout/index.vue')
 
 export const constantRouterMap: Array<RouteRecordRaw> = [
@@ -48,7 +48,7 @@ export const constantRouterMap: Array<RouteRecordRaw> = [
     component: Layout,
     redirect: '/dashboard',
     meta: { title: '', hidden: true },
-    name: 'Dashboard',
+    // name: 'Dashboard',
     children: [
       {
         path: 'dashboard',
@@ -336,7 +336,7 @@ export const asyncRoutes = [
 ]
 
 const router = createRouter({
-  history: createWebHashHistory(), // hash模式：createWebHashHistory，history模式：createWebHistory
+  history: createWebHistory(), // hash模式：createWebHashHistory，history模式：createWebHistory
   routes: constantRouterMap
 })
 export default router

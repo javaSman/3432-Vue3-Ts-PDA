@@ -94,8 +94,9 @@ function handleConfirm() {
     }
     WMSAPI.post(APIName, data, 'pda/ApartLabelList').then((res) => {
       if (res && res.success) {
-        dataMap.form.message = res.message as string
         dataMap.form = {}
+        dataMap.form.message = res.message as string
+        console.log(dataMap.form.message)
       } else {
         dataMap.form.message = res.message as string
       }
