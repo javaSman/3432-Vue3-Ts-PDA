@@ -83,7 +83,7 @@ function handleLogout() {
   justify-content: center;
   .left-container {
     text-align: left;
-    width: 60%;
+    width: 80%;
     // display: flex;
     align-items: center;
     text-overflow: ellipsis;

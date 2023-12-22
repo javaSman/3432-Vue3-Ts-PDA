@@ -186,14 +186,14 @@ export const asyncRoutes = [
       //   meta: { title: '备料换标', icon: 'grounding', hidden: false , roles: ['outBounding.materialPreparation'] },
       //   component: 'outBounding/materialPreparation/index'
       // },
-      // {
-      //   alwaysShow: false,
-      //   hidden: true,
-      //   path: 'callEmpty',
-      //   name: 'outBounding.callEmpty',
-      //   meta: { title: '呼叫空托盘', icon: 'grounding', hidden: false , roles: ['outBounding.callEmpty'] },
-      //   component: 'outBounding/callEmpty/index'
-      // },
+      {
+        alwaysShow: false,
+        hidden: true,
+        path: 'callEmpty',
+        name: 'outBounding.callEmpty',
+        meta: { title: '呼叫空托盘', icon: 'grounding', hidden: false, roles: ['outBounding.callEmpty'] },
+        component: 'outBounding/callEmpty/index'
+      },
       {
         alwaysShow: false,
         hidden: false,
@@ -295,6 +295,19 @@ export const asyncRoutes = [
         name: 'insideWarehouse.vehicleCleaning',
         meta: { title: '载具清洗', icon: 'grounding', hidden: false, roles: ['insideWarehouse.vehicleCleaning'] },
         component: 'insideWarehouse/vehicleCleaning/index'
+      },
+      {
+        alwaysShow: false,
+        hidden: false,
+        path: 'verticalStorageTray',
+        name: 'insideWarehouse.verticalStorageTray',
+        meta: {
+          title: '立库托盘绑定',
+          icon: 'grounding',
+          hidden: false,
+          roles: ['insideWarehouse.verticalStorageTray']
+        },
+        component: 'insideWarehouse/verticalStorageTray/index'
       }
     ]
   },

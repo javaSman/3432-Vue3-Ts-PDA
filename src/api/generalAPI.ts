@@ -115,6 +115,14 @@ function commonAPI(router: string) {
         method: 'delete',
         params
       })
+    },
+    /** 获取字典键值对 */
+    getDict(name: string, params: object) {
+      return request({
+        url: url + name + '/' + 'name',
+        method: 'get',
+        params
+      })
     }
     /** 导出 */
     /** 通用接口------终 */

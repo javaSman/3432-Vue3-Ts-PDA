@@ -1,21 +1,49 @@
 <template>
   <div>
-    <van-field v-model="label" readonly :name="item.prop" :label="item.label"
-      :required="item.rules && item.rules.length > 0" is-link @click="showPicker = true" />
-    <van-popup v-model:show="showPicker" position="top" get-container="body" :style="{ height: '100%' }"
-      class="flex-container">
+    <van-field
+      v-model="label"
+      readonly
+      :name="item.prop"
+      :label="item.label"
+      :required="item.rules && item.rules.length > 0"
+      is-link
+      @click="showPicker = true"
+    />
+    <van-popup
+      v-model:show="showPicker"
+      position="top"
+      get-container="body"
+      :style="{ height: '100%' }"
+      class="flex-container"
+    >
       <!-- <van-picker v-model="selected" :columns="item.options" :columns-field-names="customFieldName" @confirm="confirm" @cancel="showPicker = false" /> -->
-      <van-search class="flex-header" v-model="value" shape="round" show-action @search="onSearch(value)"
-        @input="onInput(value)" @cancel="showPicker = false" placeholder="请输入搜索关键词" />
+      <van-search
+        class="flex-header"
+        v-model="value"
+        shape="round"
+        show-action
+        @search="onSearch(value)"
+        @input="onInput(value)"
+        @cancel="showPicker = false"
+        placeholder="请输入搜索关键词"
+      />
 
-      <van-radio-group v-model="fieldValue" class="radio-group flex-main"
-        @change="item.change ? item.change(item.prop) : ''">
+      <van-radio-group
+        v-model="fieldValue"
+        class="radio-group flex-main"
+        @change="item.change ? item.change(label) : ''"
+      >
         <van-cell-group>
           <van-list v-model="listLoading" :finished="listFinished" finished-text="没有更多了">
-            <van-cell v-for="radio in item.options" :key="radio.value" :title="radio.label" clickable
-              @click="onClick(radio)">
+            <van-cell
+              v-for="radio in item.options"
+              :key="radio.value"
+              :title="radio.label"
+              clickable
+              @click="onClick(radio)"
+            >
               <template #default>
-                <span class="text"> {{ radio.value }} </span>
+                <span class="text">{{ radio.value }}</span>
               </template>
               <template #right-icon>
                 <van-radio :name="radio.value">
@@ -29,7 +57,7 @@
         <template #default>
                 <span class="text"> 1111 </span>
               </template>
-        <template #right-icon>   
+        <template #right-icon>
         <van-radio name="2">
           <template #icon="props">
             <img class="img-icon" :src="props.checked ? activeIcon : inactiveIcon" />
@@ -48,7 +76,7 @@
 import { FormConfig, IDictObj } from '@/typing'
 import { PickerConfirmEventParams, RadioGroup, Radio, showToast } from 'vant'
 import { PropType, computed, ref, onMounted, reactive } from 'vue'
-import { Vue } from 'vue-demi';
+import { Vue } from 'vue-demi'
 
 let emits = defineEmits(['update:modelValue', 'blur', 'enter', 'onSearch'])
 let props = defineProps({
@@ -59,8 +87,7 @@ let props = defineProps({
 let dataMap = reactive({
   optionsClone: JSON.parse(JSON.stringify(props.item.options))
 })
-onMounted(() => {
-})
+onMounted(() => {})
 let showPicker = ref<boolean>(false)
 /** 表单值，val */
 let fieldValue = computed({
@@ -73,12 +100,12 @@ let label = computed({
     if (props.modelValue) {
       let text = ''
       let array = props.item.options as []
-      array.forEach((item:any) => {
-      if(props.modelValue == item.value){
-        text  = item.label
-      }
-    })
-    return text
+      array.forEach((item: any) => {
+        if (props.modelValue === item.value) {
+          text = item.label
+        }
+      })
+      return text
     } else return ''
   },
   set: (val) => val
@@ -91,8 +118,8 @@ let selected = computed({
 //   get: () => props.modelValue,
 //   set: (val) => val
 // })
-const listLoading = ref(false);
-const listFinished = ref(false);
+const listLoading = ref(false)
+const listFinished = ref(false)
 // 单选框数组
 // const options = ref([{label:'101层',value:'101'},{label:'102层',value:'102'},{label:'103层',value:'103'},{label:'104层',value:'104'}])
 // 单选宽选中与未选中图标
@@ -114,16 +141,16 @@ function onInput(value: string) {
 }
 function onSearch(value: string) {
   // emits('onSearch',value)
-  if(value){
-  let data = props.item.options?.filter((item) => {
-    let reg = new RegExp(value) //正则模糊搜索
-    return reg.test(item.label) || reg.test(item.value);
-  })
-  props.item.options = data
-}else{
-  props.item.options = props.item.optionsTwo
-}
-  //console.log(props.item.options,'12344')
+  if (value) {
+    let data = props.item.options?.filter((item) => {
+      let reg = new RegExp(value) // 正则模糊搜索
+      return reg.test(item.label) || reg.test(item.value)
+    })
+    props.item.options = data
+  } else {
+    props.item.options = props.item.optionsTwo
+  }
+  // console.log(props.item.options,'12344')
 }
 const onCancel = () => {
   showPicker = ref(false)
