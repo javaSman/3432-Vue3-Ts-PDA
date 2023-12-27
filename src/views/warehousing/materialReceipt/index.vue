@@ -12,6 +12,7 @@
         :index="index"
         @supplierList="getSupplierList(dataMap.detailsForm[index])"
         :detailsForm="dataMap.detailsForm"
+        :isRules="dataMap.isRules"
       />
     </van-tab>
     <!-- <van-tab title="不可收货明细"> -->
@@ -101,7 +102,8 @@ let dataMap = reactive({
         // receivingNum: ''
       }
     ]
-  }
+  },
+  isRules: true // 明细供应商编码是否有校验规则标识
 })
 const today = new Dates(new Date()).strftime('YYYY-MM-DD')
 const APIName = 'business'
@@ -127,8 +129,8 @@ onMounted(() => {
   getDateAuthority()
 })
 // 获取仓库
-async function getDict(val, index) {
-  const res = await WMSAPI.get(APIName, { IsPage: false, MaterialsGroup: val.materialsGroup }, 'warehouse/all')
+async function getDict(val: any, index: number) {
+  const res: any = await WMSAPI.get(APIName, { IsPage: false, MaterialsGroup: val.materialsGroup }, 'warehouse/all')
   // await WMSAPI.get(APIName, { IsPage: false,MaterialsGroup:val }, 'warehouse/all').then((res) => {
   if (res.items.length === 0) {
     form.value.message = '请在web仓库管理配置物料组!'
@@ -140,10 +142,10 @@ async function getDict(val, index) {
   array.forEach((item) => {
     item.label = item.warehouseName
     item.value = item.warehouseID
-    // console.log(val.region === item.warehouseID)
-    if (val.region === item.warehouseID) {
-      dataMap.detailsForm[selectIndex].wareHouseID = item.warehouseID
-    }
+    // console.log(val.region)
+    // if (val.region === item.warehouseID) {
+    dataMap.detailsForm[selectIndex].wareHouseID = item.warehouseID
+    // }
   })
   const detailsList = ref(dataMap.detailsForm[index].detailsList)
   detailsList.value[3].options = array
@@ -171,7 +173,7 @@ function getDetails() {
         form.value.message = res.message as string
         form.value.supplierName = (res.data.header.supplierCode + '-' + res.data.header.supplierName) as string
         dataMap.supplierCode = res.data.header.supplierCode as string
-        dataMap.detailsForm.forEach((item: any, index) => {
+        dataMap.detailsForm.forEach((item: any, index: number) => {
           item.quantity === item.receivingQuantity
             ? (item.nomenge = '')
             : (item.nomenge = item.quantity - item.receivingQuantity + '  ' + item.unitID) // 未收数量
@@ -219,6 +221,12 @@ function handleInput(itemIndex, subItemIndex, propName) {
     item.multiLine[subItemIndex][propName] = value
   })
 }
+
+// dataMap.detailsList[6].blur = handleblur
+// function handleblur() {
+//   console.log(111)
+// }
+
 // 清除
 function handleClear() {
   form.value = {
@@ -239,18 +247,45 @@ function handleConfirm() {
     let userInfo = localStorage.getItem('userInfo')
     let text = eval('(' + userInfo + ')')
     let array: any[] = []
+    let result: any[] = []
+    console.log('dataMap.detailsForm', dataMap.detailsForm)
+
     dataMap.detailsForm.forEach((item: any) => {
-      // if (item.receivingNum) {
+      let result1 = item.multiLine.every((res: any) => {
+        res.supplierBatch = res.supplierBatch.replace(/\s/g, '') // 替换所有的空白字符为空字符串
+        // 然后检查替换后的字符串是否都是数字并且是14位
+        let isAllDigitsAnd14Chars = /^\d{14}$/.test(res.supplierBatch)
+        // 截取前8位
+        let firstEight = res.supplierBatch.substring(0, 8)
+        // 截取后6位
+        let lastSix = '20' + res.supplierBatch.slice(-6)
+        let date = new Date() // 创建一个新的Date对象，它会自动被设置为当前日期和时间
+        let year = date.getFullYear() // 获取年份
+        let month = date.getMonth() + 1 // 获取月份（注意：月份是从0开始的，所以我们需要+1）
+        let day = date.getDate() // 获取日期
+        if (
+          !isAllDigitsAnd14Chars ||
+          firstEight !== item.supplierCode ||
+          Number(lastSix) > Number(year + '' + month + '' + day) // 校验生产日期不能大于当前操作日期
+        ) {
+          return false
+        } else {
+          return true
+        }
+      })
+      result.push(result1)
       array.push({
         poItemNo: item.poItemNo,
         materialID: item.materialID,
         wareHouseID: item.wareHouseID,
         item: item.multiLine
       })
-      // } else {
-      //   _showFailToast('请输入实收数量！')
-      // }
     })
+    if (result.includes(false)) {
+      _showFailToast('供应商批次填写错误！')
+      dataMap.loading = false
+      return
+    }
     let data = {
       po: form.value.purchaseOrder,
       wareHouseID: form.value.warehouse,
@@ -261,6 +296,7 @@ function handleConfirm() {
       controlPeopleName: text.name,
       inputMaterial: array
     }
+
     WMSAPI.post(APIName, data, 'pda/ArriveMaterial').then((res) => {
       if (res.success === true) {
         dataMap.loading = false

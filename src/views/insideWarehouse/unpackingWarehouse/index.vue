@@ -62,6 +62,12 @@ function getDetails() {
     WMSAPI.get(APIName, { barcode: Barcode }, 'materialsbarcode/GetBarcode').then((res) => {
       if (res.success) {
         dataMap.form.quantity = res.data.quantity
+        dataMap.form.remainQuantity = ''
+        dataMap.form.spliceQuantity = 0
+        dataMap.form.share = 1
+        dataMap.form.message = `条码【${Barcode}】扫描成功`
+      } else {
+        dataMap.form.message = res.message
       }
     })
   } else {

@@ -26,7 +26,7 @@
             :isEdit="isEdit"
             @change="(val) => dropdownChange(val, item.prop)"
           />
-          <van-field v-if="item.type === 'Text'" :name="item.prop" :label="item.label">
+          <van-field v-if="item.type === 'Text'" :name="item.prop" :label="item.label" style="font-weight: bolder">
             <template #input>
               {{ form[item.prop] }}
             </template>

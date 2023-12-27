@@ -17,7 +17,11 @@ export const formList: Array<FormConfig> = [
   {
     type: 'Number',
     label: '空托数量',
-    prop: 'quantity',
-    isHide: true
+    prop: 'quantity'
+  },
+  {
+    type: 'Message',
+    label: '消息',
+    prop: 'message'
   }
 ]

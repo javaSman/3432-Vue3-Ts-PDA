@@ -208,7 +208,7 @@ function pickBarcode(val: any) {
       })
       // console.log(newList, 'newList')
       dataMap.dataList = newList
-      // form.value.imBarcode = ''
+      form.value.imBarcode = ''
       let imBarcode = formComponent.value?.formInputRef.imBarcode.inputRef
       imBarcode.focus()
     } else if (res.success && res.result === 101) {

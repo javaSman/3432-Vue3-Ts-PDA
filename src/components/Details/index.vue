@@ -25,6 +25,7 @@
               :supplierIndex="index"
               :detailsForm="detailsForm"
               :supplierConfig="supplierConfig"
+              :isRules="isRules"
             />
             <div v-if="item.type === 'button'">
               <van-button type="primary" size="mini" @click="supplierList">供应商批次</van-button>
@@ -81,7 +82,8 @@ let props = defineProps({
     default: () => {
       return false
     }
-  }
+  },
+  isRules: { type: Boolean, default: false }
 })
 const state = reactive({
   ruleForm: {

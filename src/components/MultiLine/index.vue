@@ -6,10 +6,16 @@
       <van-icon class="icon" name="minus" @click.prevent="removeSupplierConfig(item)" />
     </van-col>
     <van-col span="14">
-      <van-field v-model="item.supplierBatch" label="供应商批次" label-width="60" placeholder="请输入" />
+      <van-field
+        v-model.trim="item.supplierBatch"
+        label="供应商批次"
+        label-width="60"
+        placeholder="请输入"
+        @blur="supplierBatchBlur"
+      />
     </van-col>
     <van-col span="8">
-      <van-field v-model="item.receivingNum" label="实收" label-width="30" placeholder="请输入" />
+      <van-field v-model.trim="item.receivingNum" label="实收" label-width="30" placeholder="请输入" />
     </van-col>
     <van-col span="1">
       <!-- <van-icon class="icon" name="plus" @click="addSupplierConfig" /> -->
@@ -24,10 +30,16 @@
         <van-icon class="icon" name="minus" @click.prevent="removeSupplierConfig(item)" />
       </van-col>
       <van-col span="14">
-        <van-field v-model="item.supplierBatch" label="供应商批次" label-width="60" placeholder="请输入" clearable />
+        <van-field
+          v-model.trim="item.supplierBatch"
+          label="供应商批次"
+          label-width="60"
+          placeholder="请输入"
+          @blur="supplierBatchBlur"
+        />
       </van-col>
       <van-col span="8">
-        <van-field v-model="item.receivingNum" label="实收" label-width="30" placeholder="请输入" clearable />
+        <van-field v-model.trim="item.receivingNum" label="实收" label-width="30" placeholder="请输入" />
       </van-col>
       <van-col span="1">
         <van-icon class="icon" name="plus" @click="addSupplierConfig(index3)" />
@@ -41,10 +53,12 @@
 import { showConfirmDialog } from 'vant'
 import { _showFailToast } from '@/utils/message'
 import { reactive, toRefs, ref } from 'vue'
+let emits = defineEmits(['supplierBatchBlur'])
 let props = defineProps({
   supplierConfig: { type: Array, default: [] }, // 信息条目索引
   supplierIndex: { type: Number, default: 0 }, // 信息条目索引
-  detailsForm: { type: Array, default: [] }
+  detailsForm: { type: Array, default: [] },
+  isRules: { type: Boolean, default: false } // 供应商编码是否有校验规则标识
 })
 // 参数声明
 const show = ref(false)
@@ -77,12 +91,7 @@ const state = reactive({
 // };
 const addSupplierConfig = (val) => {
   state.val = val
-  // console.log(val)
-  // console.log(props.supplierIndex)
-  // console.log(props.supplierConfig)
-  // console.log(props.detailsForms)
   const copiedSupplierConfig = JSON.parse(JSON.stringify(props.supplierConfig))
-
   // 修改深拷贝的对象
   copiedSupplierConfig.push({
     supplierBatch: '',
@@ -127,15 +136,44 @@ const removeSupplierConfig = (item) => {
       // on cancel
     })
 }
+function supplierBatchBlur(e) {
+  if (props.isRules) {
+    // console.log(props.detailsForm[0].supplierCode, e.target.value.trim(), 'e')
+    // 替换所有的空白字符为空字符串
+    e.target.value = e.target.value.replace(/\s/g, '')
+    // 然后检查替换后的字符串是否都是数字并且是14位
+    let isAllDigitsAnd14Chars = /^\d{14}$/.test(e.target.value)
+    if (!isAllDigitsAnd14Chars) {
+      _showFailToast('供应商批次必须是14位的数字！')
+      return
+    }
+    // 截取前8位
+    let firstEight = e.target.value.substring(0, 8)
+    if (firstEight !== props.detailsForm[0].supplierCode) {
+      _showFailToast('供应商批次填写错误！')
+      return
+    }
+    // 截取后6位
+    let lastSix = '20' + e.target.value.slice(-6)
+    let date = new Date() // 创建一个新的Date对象，它会自动被设置为当前日期和时间
+    let year = date.getFullYear() // 获取年份
+    let month = date.getMonth() + 1 // 获取月份（注意：月份是从0开始的，所以我们需要+1）
+    let day = date.getDate() // 获取日期
+    // 校验生产日期不能大于当前操作日期
+    if (Number(lastSix) > Number(year + '' + month + '' + day)) {
+      _showFailToast('供应商批次填写错误！')
+      return
+    }
+    // // 截取中间8位
+    // let last1 = e.target.value.slice(8, 10) // 年
+    // let last2 = e.target.value.slice(10, 12) // 月
+    // let last3 = e.target.value.slice(12, 14) // 日
+    // console.log(last1, last2, last3)
 
-const submitForm = () => {
-  // 点击确定按钮，输出行内数据
-  var supplierConfig = props.supplierConfig
-  console.log(supplierConfig)
-  console.log('水果名称：' + supplierConfig[0].supplierBatch)
-  console.log('水果售价：' + supplierConfig[0].receivingNum)
+    // console.log(year + '' + month + '' + day) // 输出格式化的日期
+  }
+  emits('supplierBatchBlur', e.target.value.trim())
 }
-
 // 数据解构
 const { ruleForm, rules } = {
   ...toRefs(state)
