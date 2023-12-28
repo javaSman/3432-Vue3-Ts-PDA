@@ -144,9 +144,9 @@ async function getDict(val: any, index: number) {
     item.value = item.warehouseID
     // console.log(val.region)
     // if (val.region === item.warehouseID) {
-    dataMap.detailsForm[selectIndex].wareHouseID = item.warehouseID
     // }
   })
+  dataMap.detailsForm[selectIndex].wareHouseID = val.warehouseID
   const detailsList = ref(dataMap.detailsForm[index].detailsList)
   detailsList.value[3].options = array
   detailsList.value[3].optionsTwo = JSON.parse(JSON.stringify(array))
@@ -173,6 +173,7 @@ function getDetails() {
         form.value.message = res.message as string
         form.value.supplierName = (res.data.header.supplierCode + '-' + res.data.header.supplierName) as string
         dataMap.supplierCode = res.data.header.supplierCode as string
+
         dataMap.detailsForm.forEach((item: any, index: number) => {
           item.quantity === item.receivingQuantity
             ? (item.nomenge = '')
